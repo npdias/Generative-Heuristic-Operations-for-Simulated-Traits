@@ -3,7 +3,7 @@ from .memory import Memory
 
 @dataclass
 class Fact(Memory):
-    source: Any
+    source: str
     note: str
 
     def __post_init__(self):
