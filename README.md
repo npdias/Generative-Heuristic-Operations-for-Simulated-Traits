@@ -55,8 +55,7 @@ The design prioritizes modularity, allowing seamless integration of diverse AI m
 ### Example Directory Structure
 
 ```graphql
-graphql
-Copy code
+
 project_root/
 │
 ├─ config.py               # Environment loading, logging config
