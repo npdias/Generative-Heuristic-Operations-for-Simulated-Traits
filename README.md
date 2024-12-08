@@ -1,4 +1,5 @@
-# Modular Framework for Dynamic Digital Personalities
+# Generative Heuristic Operations for Simulated Traits
+*A Modular Framework for Dynamic Digital Personalities*
 
 ## **Abstract**
 
