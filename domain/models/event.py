@@ -8,4 +8,5 @@ class Event(Memory):
     dates: List[Any] = field(default=None)
 
     def __post_init__(self):
-        super().__init__(mem_type='Event')
+        self.mem_type = 'Event'
+        super().__post_init__()  # Add to Memory.all_memories

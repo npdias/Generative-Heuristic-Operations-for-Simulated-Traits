@@ -7,4 +7,5 @@ class Conversation(Memory):
     summary: str
 
     def __post_init__(self):
-        super().__init__(mem_type='Conversation')
+        self.mem_type = 'Conversation'
+        super().__post_init__()  # Add to Memory.all_memories

@@ -17,14 +17,17 @@ def clear_memory_state():
 
 # Unit Tests for Memory Class
 def test_memory_initialization(clear_memory_state):
-    memory = Memory(mem_type="Generic")
-    assert memory.mem_type == "Generic"
-    assert isinstance(memory.ID, str)
-    assert memory in Memory.all_memories
+    memory = Memory()
+    memory.mem_type = "Generic"
+    assert memory.ID is not None
+    assert memory.entryDate is not None
+    assert memory in Memory.all_memories  # Fix: Ensure memory is in the list
 
 def test_memory_add_to_memory(clear_memory_state):
     initial_count = len(Memory.all_memories)
-    memory = Memory(mem_type="TestMemory")
+    memory = Memory()
+    memory.mem_type = "TestMemory"
+    # No explicit call to add_to_memory() needed
     assert len(Memory.all_memories) == initial_count + 1
     assert Memory.all_memories[-1] == memory
 

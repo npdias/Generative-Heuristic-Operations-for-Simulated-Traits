@@ -7,4 +7,5 @@ class Fact(Memory):
     note: str
 
     def __post_init__(self):
-        super().__init__(mem_type='Fact')
+        self.mem_type = 'Fact'
+        super().__post_init__()  # Add to Memory.all_memories
