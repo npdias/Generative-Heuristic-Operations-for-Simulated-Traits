@@ -3,14 +3,13 @@ import json
 import logging
 from domain.models.interaction import Interaction
 
-# Define default file locations for JSON storage
+
 CHAT_FILE = "data/chat.json"
 
 
-# Chat Repository
 class ChatRepository:
     @staticmethod
-    async def load_chat(file_location: str = CHAT_FILE):
+    async def load_chat(file_location: str = CHAT_FILE) -> bool:
         """
         Load chat interactions from a JSON file asynchronously.
 
@@ -25,14 +24,21 @@ class ChatRepository:
                 data = await file.read()
                 interactions = json.loads(data)
                 Interaction.listed.extend(interactions)
+                logging.debug("Loaded interactions: %s", interactions)
                 logging.info("Successfully loaded chat interactions.")
                 return True
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            logging.error(f"Failed to load chat interactions: {e}")
+        except FileNotFoundError:
+            logging.warning(f"No chat file found at {file_location}.")
+            return False
+        except json.JSONDecodeError as e:
+            logging.error("Failed to decode JSON: %s", e)
+            return False
+        except Exception as e:
+            logging.error("Unexpected error while loading chats: %s", e)
             return False
 
     @staticmethod
-    async def save_chat(file_location: str = CHAT_FILE):
+    async def save_chat(file_location: str = CHAT_FILE) -> None:
         """
         Save all chat interactions to a JSON file asynchronously.
 
@@ -44,4 +50,4 @@ class ChatRepository:
                 await file.write(json.dumps(Interaction.listed, indent=4))
                 logging.info("Successfully saved chat interactions.")
         except Exception as e:
-            logging.error(f"Failed to save chat interactions: {e}")
+            logging.error("Failed to save chat interactions: %s", e)

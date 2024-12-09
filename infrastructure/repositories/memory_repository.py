@@ -4,13 +4,12 @@ import logging
 from domain.models import Memory
 
 
-# Define default file locations for JSON storage
 MEMORY_FILE = "data/memories.json"
 
-# Memory Repository
+
 class MemoryRepository:
     @staticmethod
-    async def load_memories(file_location: str = MEMORY_FILE):
+    async def load_memories(file_location: str = MEMORY_FILE) -> bool:
         """
         Load memories from a JSON file asynchronously.
 
@@ -29,14 +28,23 @@ class MemoryRepository:
                     class_mapping = Memory.get_class_mapping()
                     if mem_type in class_mapping:
                         class_mapping[mem_type](**memory_data)
-                logging.info("Successfully loaded memories.")
+                        logging.debug("Loaded memory: %s", memory_data)
+                    else:
+                        logging.warning("Unknown memory type: %s", mem_type)
+                logging.info("Successfully loaded all memories.")
                 return True
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            logging.error(f"Failed to load memories: {e}")
+        except FileNotFoundError:
+            logging.warning(f"No memory file found at {file_location}.")
+            return False
+        except json.JSONDecodeError as e:
+            logging.error("Failed to decode JSON: %s", e)
+            return False
+        except Exception as e:
+            logging.error("Unexpected error while loading memories: %s", e)
             return False
 
     @staticmethod
-    async def save_memories(file_location: str = MEMORY_FILE):
+    async def save_memories(file_location: str = MEMORY_FILE) -> None:
         """
         Save all memories to a JSON file asynchronously.
 
@@ -47,6 +55,6 @@ class MemoryRepository:
             async with aiofiles.open(file_location, mode="w") as file:
                 data = {"memories": [memory.__dict__ for memory in Memory.all_memories]}
                 await file.write(json.dumps(data, indent=4))
-                logging.info("Successfully saved memories.")
+                logging.info("Successfully saved all memories.")
         except Exception as e:
-            logging.error(f"Failed to save memories: {e}")
+            logging.error("Failed to save memories: %s", e)
