@@ -1,4 +1,5 @@
 import aiofiles
+import os
 import json
 import logging
 from domain.models import Memory
@@ -44,7 +45,7 @@ class MemoryRepository:
             return False
 
     @staticmethod
-    async def save_memories(file_location: str = MEMORY_FILE) -> None:
+    async def save_memories(file_location: str):
         """
         Save all memories to a JSON file asynchronously.
 
@@ -52,9 +53,12 @@ class MemoryRepository:
             file_location (str): Path to the JSON file.
         """
         try:
+            os.makedirs(os.path.dirname(file_location), exist_ok=True)
             async with aiofiles.open(file_location, mode="w") as file:
                 data = {"memories": [memory.__dict__ for memory in Memory.all_memories]}
                 await file.write(json.dumps(data, indent=4))
-                logging.info("Successfully saved all memories.")
+                logging.info(f"Successfully saved memories to {file_location}.")
         except Exception as e:
-            logging.error("Failed to save memories: %s", e)
+            logging.error(f"Failed to save memories: {e}")
+
+

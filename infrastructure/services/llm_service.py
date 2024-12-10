@@ -1,7 +1,7 @@
 import os
 import logging
 from openai import OpenAI
-from typing import List, Dict, Generator
+from typing import Generator, AsyncGenerator, List, Dict
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -19,61 +19,52 @@ class LLMService:
         self.model = os.getenv("GPT_MODEL")
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    def send_completion(self, messages: List[Dict[str, str]], stream: bool = False):
+    async def send_completion(self, messages: List[Dict[str, str]], stream: bool = False) -> AsyncGenerator[str, None]:
         """
         Send a completion request to OpenAI's API.
 
         Args:
             messages (List[Dict[str, str]]): A list of message dictionaries with "role" and "content" keys.
-            stream (bool): If True, enables response streaming.
+            stream (bool): Whether to enable streaming.
 
-        Returns:
-            str or Generator: The assistant's response content (non-streaming)
-                              or a generator yielding response chunks (streaming).
+        Yields:
+            str: Response chunks in streaming mode or the full response in non-streaming mode.
         """
         try:
             logging.info("Sending messages to LLM: %s", messages)
-
             if stream:
-                # Stream response
+                # Streaming response
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
-                    stream=True
+                    stream=True,
                 )
-                return self._stream_response(response)
+                for chunk in response:
+                    delta = chunk.choices[0].delta
+                    if delta.content:
+                        yield delta.content
             else:
                 # Non-streaming response
                 response = self.client.chat.completions.create(
                     model=self.model,
-                    messages=messages
+                    messages=messages,
                 )
-                logging.debug("LLM Response: %s", response)
-                return response.choices[0].message.content
-
+                yield response.choices[0].message.content
         except Exception as e:
             logging.error(f"Error in send_completion: {e}")
-            return "Error: Unable to process the request."
-
-    def _stream_response(self, response) -> Generator[str, None, None]:
-        """
-        Handle the streaming response from OpenAI API.
-
-        Args:
-            response: The streaming response object from OpenAI.
-
-        Yields:
-            str: The content of each streamed chunk.
-        """
-        try:
-            for chunk in response:
-                delta = chunk.choices[0].delta
-                content = delta.content
-                if content:
-                    logging.debug("Streamed chunk: %s", content)
-                    yield content
-        except Exception as e:
-            logging.error(f"Error in _stream_response: {e}")
-            yield "Error: Unable to process the streaming response."
-
-# Main block for demonstration
+            yield "Error: Unable to process the request."
+    #
+    # def _stream_response(self, response) -> Generator[str, None, None]:
+    #     """
+    #     Handle a streaming response.
+    #
+    #     Args:
+    #         response: The OpenAI streaming response object.
+    #
+    #     Yields:
+    #         str: Chunks of content from the stream.
+    #     """
+    #     for chunk in response:
+    #         delta = chunk["choices"][0]["delta"]
+    #         if "content" in delta:
+    #             yield delta["content"]

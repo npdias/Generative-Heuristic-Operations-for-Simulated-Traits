@@ -2,24 +2,22 @@ import logging
 from infrastructure.services.llm_service import LLMService
 from infrastructure.repositories.chat_repository import ChatRepository
 from infrastructure.repositories.memory_repository import MemoryRepository
+from typing import AsyncGenerator, Union
+import asyncio
+
+CHAT_FILE = "data/chat.json"
+MEMORY_FILE = "data/memories.json"
 
 class Orchestrator:
-    """
-    Orchestrator for managing workflows between services, repositories, and user interactions.
-    """
-
     def __init__(self):
         self.llm_service = LLMService()
         self.chat_repository = ChatRepository()
         self.memory_repository = MemoryRepository()
 
     async def start_session(self):
-        """
-        Start a new session.
-        """
         logging.info("Starting a new session...")
-        await self.chat_repository.load_chat()
-        await self.memory_repository.load_memories()
+        await self.chat_repository.load_chat(file_location=CHAT_FILE)
+        await self.memory_repository.load_memories(file_location=MEMORY_FILE)
 
     async def handle_user_input(self, user_input: str, stream: bool = False):
         """
@@ -29,41 +27,43 @@ class Orchestrator:
             user_input (str): The user's input.
             stream (bool): Whether to stream the response.
 
-        Returns:
-            str or generator: The assistant's response.
+        Yields:
+            str: The assistant's response in chunks if streaming, otherwise the complete response.
         """
         # Construct messages with system context
+        prior_context = self.chat_repository.load_chat_log()
         messages = [
             {"role": "system", "content": "You are a helpful assistant."},
-            *self.chat_repository.load_chat_log(),  # Include prior chat context
+            *prior_context,  # Include prior chat context
             {"role": "user", "content": user_input}
         ]
 
         logging.info("Handling user input: %s", user_input)
 
-        # Query the LLM
+        await self.chat_repository.add_chat({"role": "user", "content": user_input})
+        response = ""
+
         if stream:
-            return self.llm_service.send_completion(messages, stream=True)
+            # Stream the response and yield chunks
+            async for chunk in self.llm_service.send_completion(messages, stream=True):
+                response += chunk
+                yield chunk  # Yield chunk for further processing if needed
         else:
-            response = self.llm_service.send_completion(messages, stream=False)
-            # Save the interaction to the chat log
-            await self.chat_repository.add_chat({"role": "user", "content": user_input})
-            await self.chat_repository.add_chat({"role": "assistant", "content": response})
-            return response
+            # Non-streaming response
+            async for chunk in self.llm_service.send_completion(messages, stream=False):
+                response += chunk
+            yield response
+        await self.chat_repository.add_chat({"role": "assistant", "content": response})
 
     async def end_session(self):
-        """
-        End the session and save all interactions to memory.
-        """
         logging.info("Ending session and saving data...")
-        await self.chat_repository.save_chat()
-        await self.memory_repository.save_memories()
+        await self.chat_repository.save_chat(file_location=CHAT_FILE)
+        await self.memory_repository.save_memories(file_location=MEMORY_FILE)
 
-import asyncio
 
 if __name__ == "__main__":
-    # Setup basic logging
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 
     async def main():
         orchestrator = Orchestrator()
@@ -71,18 +71,20 @@ if __name__ == "__main__":
         # Start a new session
         await orchestrator.start_session()
 
-        # Handle user input
+        # Handle user input (Non-Streaming)
         user_input = "Explain the concept of gravity."
         print("\nNon-Streaming Response:")
-        response = await orchestrator.handle_user_input(user_input)
-        print(response)
+        async for response in orchestrator.handle_user_input(user_input, stream=False):
+            print(response)  # Ensure non-streaming response prints correctly
 
         # Handle user input with streaming
         print("\nStreaming Response:")
-        async for chunk in orchestrator.handle_user_input("Describe the water cycle.", stream=True):
-            print(chunk, end="", flush=True)
+        async for chunk in orchestrator.handle_user_input("Write 3 haikus about Nuns and use the word None as often as you can", stream=True):
+            print(chunk, end="", flush=True)  # Ensure streaming chunks print incrementally
+        print()
 
         # End the session
         await orchestrator.end_session()
+
 
     asyncio.run(main())
