@@ -50,18 +50,3 @@ class LLMService:
         except Exception as e:
             logging.error(f"Error in send_completion: {e}")
             yield "Error: Unable to process the request."
-    #
-    # def _stream_response(self, response) -> Generator[str, None, None]:
-    #     """
-    #     Handle a streaming response.
-    #
-    #     Args:
-    #         response: The OpenAI streaming response object.
-    #
-    #     Yields:
-    #         str: Chunks of content from the stream.
-    #     """
-    #     for chunk in response:
-    #         delta = chunk["choices"][0]["delta"]
-    #         if "content" in delta:
-    #             yield delta["content"]

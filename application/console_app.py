@@ -1,6 +1,39 @@
-# Purpose: Provides a console-based interface for interacting with the application.
-# Responsibilities:
-# Facilitates input/output for users running the application via a terminal.
-# Handles user prompts, displays results, and manages session flow in the console environment.
-# Integrates with chat_handler and memory_handler to provide the appropriate backend functionality.
-# Implements basic command-line commands, shortcuts, or menus.
+import asyncio
+import logging
+from infrastructure.coordinator import Coordinator
+
+
+class ConsoleApp:
+    def __init__(self):
+        self.coordinator = Coordinator()
+
+    async def run(self):
+        logging.info("Starting ConsoleApp...")
+
+        # Ensure the session starts before entering the loop
+        await self.coordinator.start_session()
+        logging.info("Session started. Entering the main loop.")
+
+        print("Welcome to the Chat Console!")
+        print("Type 'exit' to quit.\n")
+
+        while True:
+            user_input = input("You: ")
+
+            if user_input.lower() in ['exit', 'quit']:
+                print("Exiting chat. Goodbye!")
+                await self.coordinator.end_session()
+                break
+
+            print("Assistant: ", end="", flush=True)
+
+            # Stream the response
+            async for chunk in self.coordinator.handle_user_input(user_input, stream=True):
+                print(chunk, end="", flush=True)
+            print("\n")  # Add a newline after the response
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+    app = ConsoleApp()
+    asyncio.run(app.run())

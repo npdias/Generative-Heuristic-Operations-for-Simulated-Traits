@@ -34,6 +34,7 @@ class ChatHandler:
 
         # Construct messages with prior context
         prior_context = self.chat_repository.load_chat_log()
+        logging.info("Processing user input through ChatHandler: %s", prior_context)
         messages = [
             *prior_context,  # Include prior chat context
             {"role": "user", "content": user_input}
