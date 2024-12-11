@@ -23,6 +23,7 @@ class Memory:
     identity = {}
     file_location = os.path.join(DATA_DIR, "memories.json")
 
+
     def __post_init__(self):
         """
         Perform post-initialization tasks:
@@ -82,10 +83,10 @@ class Memory:
         """
         Returns a dictionary mapping memory types to their corresponding classes.
         """
-        from domain.models.person import Person
-        from domain.models.event import Event
-        from domain.models.fact import Fact
-        from domain.models.conversation import Conversation
+        from .person import Person
+        from .event import Event
+        from .fact import Fact
+        from .conversation import Conversation
 
         return {
             "Person": Person,
@@ -99,5 +100,18 @@ class Memory:
         """
         Create a default `Person` memory representing 'self'.
         """
-        from domain.models.person import Person
+        from .person import Person
         Person(name="", relation="self", isSelf=True, alive=True)
+
+
+    async def summarize_all_memories(self):
+        # Query LLM for summary
+        messages = [
+            {"role": "system", "content": "You are a summarization assistant."},
+            {"role": "user",
+             "content": f"Summarize the following memories and conversation:\n\n{Memory.all_memories}"}
+        ]
+        summary = ""
+        async for chunk in self.llm_service.send_completion(messages, stream=False):
+            summary += chunk
+        return summary
