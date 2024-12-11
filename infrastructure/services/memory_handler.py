@@ -1,11 +1,9 @@
-
-from infrastructure.services.llm_service import LLMService
-from domain import *
+## This needs to be collapsed into Memory
 
 class MemoryHandler:
 
     def __init__(self):
-        self.memory_repository = MemoryRepository()
+        self.memory_repository = Memory()
         self.llm_service = LLMService()
 
     async def load_memories(self):

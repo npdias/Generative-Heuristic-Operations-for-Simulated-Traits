@@ -1,7 +1,5 @@
 import logging
 from typing import AsyncGenerator, List, Dict
-from xml.dom.minidom import ProcessingInstruction
-
 from infrastructure.repositories.chat_repository import ChatRepository
 from infrastructure.services.llm_service import LLMService
 
@@ -90,7 +88,7 @@ class ChatHandler:
 # Example usage
 if __name__ == "__main__":
     import asyncio
-    from domain.models import *
+    from infrastructure.models import *
 
     async def main():
         # Load existing memories from file

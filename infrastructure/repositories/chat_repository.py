@@ -11,27 +11,14 @@ from config import DATA_DIR
 
 
 class ChatRepository:
-    """
-    Repository for managing chat interactions.
-    """
 
     def __init__(self):
-        """
-        Initialize the ChatRepository.
-        """
+
         self.chat_log: List[Dict[str, str]] = []  # Ensure chat_log is initialized as an empty list
         self.file_location = os.path.join(DATA_DIR, 'chat.json')
 
     async def load_chat(self) -> bool:
-        """
-        Load interactions from a JSON file asynchronously.
 
-        Args:
-            self.file_location (str): Path to the JSON file.
-
-        Returns:
-            bool: True if interactions were loaded successfully, False otherwise.
-        """
         try:
             async with aiofiles.open(self.file_location, mode="r") as file:
                 data = await file.read()
@@ -48,12 +35,7 @@ class ChatRepository:
             return False
 
     async def save_chat(self):
-        """
-        Save all interactions to a JSON file asynchronously.
 
-        Args:
-            self.file_location (str): Path to the JSON file.
-        """
         try:
             os.makedirs(os.path.dirname(self.file_location), exist_ok=True)  # Ensure directory exists
             async with aiofiles.open(self.file_location, mode="w") as file:
@@ -64,21 +46,11 @@ class ChatRepository:
 
 
     def load_chat_log(self) -> List[Dict[str, str]]:
-        """
-        Retrieve the loaded chat log as a list of messages.
 
-        Returns:
-            list: The chat log.
-        """
         return self.chat_log
 
     async def add_chat(self, message: Dict[str, str]) -> None:
-        """
-        Add a new message to the chat log and save it.
 
-        Args:
-            message (Dict[str, str]): A dictionary with "role" and "content".
-        """
         message_with_timestamp = {
             **message,
             "timestamp": datetime.now().isoformat()  # Use UTC timestamp
