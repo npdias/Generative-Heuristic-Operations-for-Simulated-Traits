@@ -1,0 +1,17 @@
+{
+    "memories": [
+        {
+            "ID": "15157cc5e91b4d8d9f8b2774bc33cb60",
+            "entryDate": 1733876844.5373006,
+            "name": "",
+            "relation": "self",
+            "alive": true,
+            "isSelf": true,
+            "relationships": [],
+            "currentObjectives": [],
+            "miscDetails": [],
+            "personality": "",
+            "mem_type": "Person"
+        }
+    ]
+}

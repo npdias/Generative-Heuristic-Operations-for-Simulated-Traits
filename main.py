@@ -1,27 +1,6 @@
-import asyncio
-
-if __name__ == "__main__":
-    # Setup basic logging
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
-    async def main():
-        orchestrator = Orchestrator()
-
-        # Start a new session
-        await orchestrator.start_session()
-
-        # Handle user input
-        user_input = "Explain the concept of gravity."
-        print("\nNon-Streaming Response:")
-        response = await orchestrator.handle_user_input(user_input)
-        print(response)
-
-        # Handle user input with streaming
-        print("\nStreaming Response:")
-        async for chunk in orchestrator.handle_user_input("Describe the water cycle.", stream=True):
-            print(chunk, end="", flush=True)
-
-        # End the session
-        await orchestrator.end_session()
-
-    asyncio.run(main())
+# Purpose: Acts as the entry point for the application.
+# Responsibilities:
+# Configures logging and application-wide settings.
+# Instantiates core components, such as the orchestrator and repository services.
+# Provides a unified interface to run the console application or other modes of interaction (e.g., web, CLI, etc.).
+# Handles application startup, including loading configurations and initializing any required services or data.
