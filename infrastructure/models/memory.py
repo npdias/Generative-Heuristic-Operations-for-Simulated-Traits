@@ -103,15 +103,18 @@ class Memory:
         from .person import Person
         Person(name="", relation="self", isSelf=True, alive=True)
 
-
-    async def summarize_all_memories(self):
+    @staticmethod
+    async def summarize_all_memories():
         # Query LLM for summary
+        from infrastructure.services.llm_service import LLMService
+
         messages = [
             {"role": "system", "content": "You are a summarization assistant."},
             {"role": "user",
              "content": f"Summarize the following memories and conversation:\n\n{Memory.all_memories}"}
         ]
+
         summary = ""
-        async for chunk in self.llm_service.send_completion(messages, stream=False):
+        async for chunk in LLMService.send_completion(messages=messages, stream=False):
             summary += chunk
         return summary

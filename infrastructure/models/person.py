@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Dict, Any
-from domain.models.memory import Memory
+from infrastructure.models import *
+
 
 @dataclass
 class Person(Memory):
@@ -19,3 +20,8 @@ class Person(Memory):
         if self.relation.lower() == 'self':
             self.isSelf = True
             Memory.identity = self
+
+    def __setattr__(self, name, value):
+        if self.isSelf:
+            Event(note=f'My {name} changed from "{getattr(self, name)}" to "{value}"')
+        self.__dict__[name] = value

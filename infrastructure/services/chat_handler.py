@@ -1,5 +1,8 @@
+import asyncio
 import logging
 from typing import AsyncGenerator, List, Dict
+
+from infrastructure.models import Conversation
 from infrastructure.repositories.chat_repository import ChatRepository
 from infrastructure.services.llm_service import LLMService
 
@@ -69,64 +72,16 @@ class ChatHandler:
         self.chat_repository.chat_log.clear()
         await self.chat_repository.save_chat()
 
-    async def generate_transcript(self) -> Dict[str, str]:
-
+    async def generate_transcript(self):
+        from infrastructure.models.conversation import Conversation
         logging.info("generating chat history...")
-
         # Retrieve the current chat history
         chat_history = self.chat_repository.load_chat_log()
         if not chat_history:
             logging.warning("Chat history is empty, nothing to summarize.")
             return {"summary": "", "transcript": ""}
-
         # Format the transcript
         transcript = "\n".join(f"[{msg['role'].capitalize()}]: {msg['content']}" for msg in chat_history)
+        await Conversation(transcript=transcript)
+        return True
 
-        return {"transcript": transcript}
-
-
-# Example usage
-if __name__ == "__main__":
-    import asyncio
-    from infrastructure.models import *
-
-    async def main():
-        # Load existing memories from file
-        await Memory.load_from_file()
-        await Memory.save_all_to_file()
-        # Create a new memory
-        # peep = Person(name="Alice",relation='self')
-        # print(peep)
-
-        # Wait to ensure asynchronous saving is complete
-        await asyncio.sleep(1)
-
-    asyncio.run(main())
-
-
-
-
-
-
-# async def main():
-#     # Initialize components
-#     chat_handler = ChatHandler()
-#     test = MemoryHandler()
-#     # Add a test interaction
-#     new_self = await test.get_self()
-#     # recap = await test.summarize_all_memories()
-#     # await chat_handler.chat_repository.add_chat({"role": "system", "content": f"Recap:{recap}"})
-#     # await chat_handler.chat_repository.add_chat({"role": "user", "content": "What is gravity?"})
-#     # await chat_handler.chat_repository.add_chat({"role": "assistant", "content": "Gravity is a force that attracts two bodies toward each other."})
-#     # async for response in chat_handler.process_user_input("You're mom's body!"):
-#     #     print(response)
-#     # # Summarize the chat history
-#     # print("\nChat over\n")
-#     #
-#     # await test.summarize_chat(transcript= await chat_handler.generate_transcript())
-#     #
-#     #
-#     # await chat_handler.chat_repository.save_chat()
-#
-#
-# asyncio.run(main())

@@ -3,23 +3,20 @@ import logging
 from openai import OpenAI
 from typing import Generator, AsyncGenerator, List, Dict
 from dotenv import load_dotenv
+from dataclasses import dataclass
 
 # Load environment variables
 load_dotenv()
-
+@dataclass
 class LLMService:
     """
     Service class for interacting with OpenAI's GPT-based language models.
     """
+    model = os.getenv("GPT_MODEL")
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    def __init__(self):
-        """
-        Initialize the LLMService with a dedicated client and model.
-        """
-        self.model = os.getenv("GPT_MODEL")
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-    async def send_completion(self, messages: List[Dict[str, str]], stream: bool = False) -> AsyncGenerator[str, None]:
+    @staticmethod
+    async def send_completion(messages: List[Dict[str, str]], stream: bool = False) -> AsyncGenerator[str, None]:
         """
         Send a completion request to OpenAI's API.
 
@@ -34,8 +31,8 @@ class LLMService:
             logging.info("Sending messages to LLM: %s", messages)
             if stream:
                 # Streaming response
-                response = self.client.chat.completions.create(
-                    model=self.model,
+                response = LLMService.client.chat.completions.create(
+                    model=LLMService.model,
                     messages=messages,
                     stream=True,
                 )
@@ -45,8 +42,8 @@ class LLMService:
                         yield delta.content
             else:
                 # Non-streaming response
-                response = self.client.chat.completions.create(
-                    model=self.model,
+                response = LLMService.client.chat.completions.create(
+                    model=LLMService.model,
                     messages=messages,
                 )
                 yield response.choices[0].message.content
