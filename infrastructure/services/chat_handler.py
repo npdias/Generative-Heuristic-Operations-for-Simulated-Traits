@@ -20,40 +20,38 @@ class ChatHandler:
         self.llm_service = LLMService()
 
     async def process_user_input(self, user_input: str, stream: bool = False) -> AsyncGenerator[str, None]:
-        """
-        Process user input by querying the LLM and returning responses.
-
-        Args:
-            user_input (str): The user's input.
-            stream (bool): Whether to stream the response.
-
-        Yields:
-            str: The assistant's response in chunks if streaming, otherwise the complete response.
-        """
         logging.info("Processing user input through ChatHandler: %s", user_input)
 
-        # Construct messages with prior context
-        prior_context = self.chat_repository.load_chat_log()
-        logging.info("Processing user input through ChatHandler: %s", prior_context)
-        messages = [
-            *prior_context,  # Include prior chat context
-            {"role": "user", "content": user_input}
-        ]
+        # First, add the user message to the chat log
+        await self.chat_repository.add_chat({"role": "user", "content": user_input})
 
-        # Query the LLM and yield results
+        # Now retrieve the updated context
+        prior_context = self.chat_repository.load_chat_log()
+
+        # For the request to LLM, the prior_context now includes the newly added user message
+        messages = prior_context
+
         if stream:
             logging.info("Streaming response enabled.")
+            assistant_response = ""
+            # Stream the response from LLM
             async for chunk in self.llm_service.send_completion(messages, stream=True):
+                assistant_response += chunk
                 yield chunk
+
+            # After streaming is complete, add the assistant's full response
+            await self.chat_repository.add_chat({"role": "assistant", "content": assistant_response})
+
         else:
             logging.info("Non-streaming response requested.")
-            response = ""
+            assistant_response = ""
             async for chunk in self.llm_service.send_completion(messages, stream=False):
-                response += chunk
-            # Save user input and assistant response
-            await self.chat_repository.add_chat({"role": "user", "content": user_input})
-            await self.chat_repository.add_chat({"role": "assistant", "content": response})
-            yield response
+                assistant_response += chunk
+
+            # Add the assistant's response to the log
+            await self.chat_repository.add_chat({"role": "assistant", "content": assistant_response})
+            logging.debug(f"Response added to chat log: {assistant_response}")
+            yield assistant_response
 
     async def fetch_chat_history(self) -> List[Dict[str, str]]:
         """
@@ -75,14 +73,25 @@ class ChatHandler:
 
     async def generate_transcript(self):
         from infrastructure.models.conversation import Conversation
-        logging.info("generating chat history...")
-        # Retrieve the current chat history
+        logging.info("Generating chat history...")
+
+        # Retrieve the current chat history from in-memory cache
         chat_history = self.chat_repository.load_chat_log()
         if not chat_history:
             logging.warning("Chat history is empty, nothing to summarize.")
-            return {"summary": "", "transcript": ""}
-        # Format the transcript
-        transcript = "\n".join(f"[{msg['role'].capitalize()}]: {msg['content']}" for msg in chat_history)
-        await Conversation(transcript=transcript)
-        return True
+            return None  # or return an empty Conversation if that makes sense
+
+        # Format the transcript as a string
+        transcript = "\n".join(
+            f"[{msg['role'].capitalize()}]: {msg['content']}"
+            for msg in chat_history
+        )
+
+        # Create and return a Conversation object with the transcript
+        # If Conversation is a plain class, this might be enough.
+        # If it involves async initialization or database calls, ensure that logic is handled here.
+        conversation = Conversation(transcript=transcript)
+
+        # Return the created Conversation object
+        return conversation
 

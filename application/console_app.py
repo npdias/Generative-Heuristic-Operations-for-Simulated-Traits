@@ -1,7 +1,8 @@
+# ~application/console_app.py
+
 import asyncio
 import logging
 from infrastructure.coordinator import Coordinator
-
 
 class ConsoleApp:
     def __init__(self):
@@ -28,10 +29,9 @@ class ConsoleApp:
             print("Assistant: ", end="", flush=True)
 
             # Stream the response
-            async for chunk in self.coordinator.handle_user_input(user_input, stream=True):
+            async for chunk in self.coordinator.chat_handler.process_user_input(user_input, stream=True):
                 print(chunk, end="", flush=True)
             print("\n")  # Add a newline after the response
-
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

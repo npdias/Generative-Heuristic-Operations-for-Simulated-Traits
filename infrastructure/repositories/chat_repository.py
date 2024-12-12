@@ -78,19 +78,13 @@ class ChatRepository:
         return self.chat_log
 
     async def add_chat(self, message: Dict[str, str]) -> None:
-        """
-        Add a new message to the chat log and persist the updated log.
-
-        Args:
-            message (Dict[str, str]): A dictionary containing "role" and "content".
-        """
         message_with_timestamp = {
             **message,
-            "timestamp": datetime.now().isoformat()  # Add a UTC timestamp to the message
+            "timestamp": datetime.now().isoformat()
         }
         self.chat_log.append(message_with_timestamp)
-        logging.info(f"Added new message to chat log: {message_with_timestamp}")
-        await self.save_chat()  # Persist changes to the file
+        logging.info(f"add_chat called. Current chat log: {self.chat_log}")
+        await self.save_chat()
 
     async def clear_chat(self):
         """
