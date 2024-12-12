@@ -79,7 +79,7 @@ class ChatHandler:
         chat_history = self.chat_repository.load_chat_log()
         if not chat_history:
             logging.warning("Chat history is empty, nothing to summarize.")
-            return None  # or return an empty Conversation if that makes sense
+            return None
 
         # Format the transcript as a string
         transcript = "\n".join(
@@ -87,11 +87,6 @@ class ChatHandler:
             for msg in chat_history
         )
 
-        # Create and return a Conversation object with the transcript
-        # If Conversation is a plain class, this might be enough.
-        # If it involves async initialization or database calls, ensure that logic is handled here.
-        conversation = Conversation(transcript=transcript)
-
-        # Return the created Conversation object
-        return conversation
+        # Return the created transcript object
+        return transcript
 

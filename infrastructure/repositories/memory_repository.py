@@ -48,26 +48,29 @@ class MemoryRepository:
 
             async with aiofiles.open(self.file_location, mode="r") as file:
                 data = await file.read()
-                if not data.strip():  # Handle empty file
+                json_data = json.loads(data)
+                if not json_data:  # Handle empty file
                     logging.warning(f"Memory file is empty at {self.file_location}. Starting with an empty list.")
                     self.memories = []
                     return False
 
-                json_data = json.loads(data)
-                memories_data = json_data.get("memories", [])
-                loaded_memories = []
 
-                for md in memories_data:
-                    mem_type = md.get("mem_type")
-                    cls = self.class_mapping.get(mem_type)
-                    if cls:
-                        # Filter only the fields that are part of the dataclass
-                        fields = {k: v for k, v in md.items() if k in cls.__dataclass_fields__}
-                        loaded_memories.append(cls(**fields))
-                    else:
-                        logging.warning(f"Unknown memory type '{mem_type}' encountered in file.")
 
-                self.memories = loaded_memories
+                for obj in json_data['memories']:
+                    class_obj = self.class_mapping[obj['mem_type']](**obj)
+                    self.memories.append(class_obj)
+
+                print(self.memories)
+                # for md in memories_data:
+                #     mem_type = md.get("mem_type")
+                #     cls = self.class_mapping.get(mem_type)
+                #     if cls:
+                #         # Filter only the fields that are part of the dataclass
+                #         fields = {k: v for k, v in md.items() if k in cls.__dataclass_fields__}
+                #         loaded_memories.append(cls(**fields))
+                #     else:
+                #         logging.warning(f"Unknown memory type '{mem_type}' encountered in file.")
+
                 logging.info(f"Successfully loaded memories from {self.file_location}.")
                 return True
         except json.JSONDecodeError as e:
@@ -86,12 +89,13 @@ class MemoryRepository:
         Raises:
             Exception: If the file cannot be written due to IO errors.
         """
+        print(self.memories)
         try:
             os.makedirs(os.path.dirname(self.file_location), exist_ok=True)
             async with aiofiles.open(self.file_location, mode="w") as file:
-                data = {"memories": [m.__dict__ for m in self.memories]}
-
-                json.dump(data,file)
+                data = {"memories": [obj.__dict__ for obj in self.memories]}
+                print(data)
+                await file.write(json.dumps(data, indent=4))
                 logging.info(f"Successfully saved memories to {self.file_location}.")
         except Exception as e:
             logging.error(f"Failed to save memories: {e}")
@@ -106,7 +110,7 @@ class MemoryRepository:
         """
         return self.memories
 
-    async def add_memory(self, memory: Memory) -> None:
+    async def append_and_save_all(self, memory: Memory) -> None:
         """
         Add a new memory to the in-memory list and persist it.
 
@@ -114,16 +118,16 @@ class MemoryRepository:
             memory (Memory): The memory instance to add.
         """
         self.memories.append(memory)
-        logging.info(f"add_memory called. Current memories: {[m.ID for m in self.memories]}")
+        logging.info(f"add_memory called. Current memories: {[m for m in self.memories]}")
         await self.save_all()
 
     async def clear_all_memories(self):
         """
-        Clear the current list of memories and persist the empty state.
-        """
-        logging.info("Clearing all memories...")
-        self.memories = []
-        await self.save_all()
+        # Clear the current list of memories and persist the empty state.
+        # """
+        # logging.info("Clearing all memories...")
+        # self.memories = []
+        # await self.save_all()
 
     def _memory_to_dict(self, memory: Memory) -> dict:
         """
@@ -135,4 +139,4 @@ class MemoryRepository:
         Returns:
             dict: A dictionary representation of the memory.
         """
-        return {field: getattr(memory, field) for field in memory.__dataclass_fields__}
+        return {field: getattr(memory, field) for field in memory.__dir__()}

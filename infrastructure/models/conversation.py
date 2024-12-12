@@ -5,7 +5,7 @@ from infrastructure.models.memory import Memory
 
 @dataclass(kw_only=True)
 class Conversation(Memory):
-    mem_type: str = field(default="Conversation", init=False)
+    mem_type: str = field(default="Conversation")
     transcript: str
     summary: str = ""
 

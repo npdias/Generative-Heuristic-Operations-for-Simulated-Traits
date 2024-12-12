@@ -1,22 +1,22 @@
 [
     {
         "role": "user",
-        "content": "Test",
-        "timestamp": "2024-12-12T02:30:12.746806"
+        "content": "test",
+        "timestamp": "2024-12-12T14:11:21.837806"
     },
     {
         "role": "assistant",
-        "content": "Test successful! How can I assist you today?",
-        "timestamp": "2024-12-12T02:30:13.436495"
+        "content": "It looks like you're testing the system. How can I assist you today?",
+        "timestamp": "2024-12-12T14:11:22.552834"
     },
     {
         "role": "user",
-        "content": "goodbye",
-        "timestamp": "2024-12-12T02:30:18.805579"
+        "content": "haiku dog and cat ",
+        "timestamp": "2024-12-12T14:11:38.403674"
     },
     {
         "role": "assistant",
-        "content": "Goodbye! If you have more questions in the future, feel free to ask. Have a great day!",
-        "timestamp": "2024-12-12T02:30:19.584328"
+        "content": "In sunlit garden,  \nA cat watches from the shade,  \nDog wags, tail a blur.  ",
+        "timestamp": "2024-12-12T14:11:39.058058"
     }
 ]

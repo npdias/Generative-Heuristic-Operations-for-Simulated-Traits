@@ -24,9 +24,7 @@ class Coordinator:
         transcript = await self.chat_handler.generate_transcript()
 
         # Create and register the Conversation memory
-        conversation = await self.memory_handler.create_memory(Conversation, transcript=transcript)
+        conversation = await self.memory_handler.summarize_conversation(transcript)
 
-        # Summarize the conversation
-        await self.memory_handler.summarize_conversation(conversation)
 
         logging.info("Session ended successfully.")

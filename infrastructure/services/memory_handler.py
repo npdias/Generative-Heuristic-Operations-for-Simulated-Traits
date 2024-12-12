@@ -23,7 +23,7 @@ class MemoryHandler:
     The MemoryHandler orchestrates the lifecycle of memory objects:
     - Initializes the memory state from the MemoryRepository.
     - Ensures a default memory is present if none exist.
-    - Provides utility methods to create and register new memories.
+    - Provides a single method to create and register new memories.
     - Offers a summarization feature by interacting with the LLMService.
     """
 
@@ -42,21 +42,15 @@ class MemoryHandler:
 
         if not self.memories:
             logging.info("No memories found. Creating a default Person memory.")
-            await self.create_default_person()
+            await self.add_memory(Person, {'name':"Default", 'relation':"self", 'isSelf':True, 'alive':True})
 
-    async def create_default_person(self):
+    async def add_memory(self, cls: Type[Memory], kwarg_dict: dict) -> Memory:
         """
-        Create a default person memory to ensure the system always has at least one memory.
-        """
-        await self.create_memory(Person, name="Default", relation="self", isSelf=True, alive=True)
-
-    async def create_memory(self, cls: Type[Memory], **kwargs) -> Memory:
-        """
-        Create a new memory instance of the given subclass of Memory and add it to the repository.
+        Create and add a new memory instance of the given subclass of Memory.
 
         Args:
             cls (Type[Memory]): The subclass of Memory to instantiate.
-            **kwargs: Fields required by the memory subclass.
+            kwarg_dict: Fields required by the memory subclass.
 
         Returns:
             Memory: The newly created memory instance.
@@ -64,23 +58,18 @@ class MemoryHandler:
         if not issubclass(cls, Memory):
             raise ValueError("cls must be a subclass of Memory")
 
-        memory = cls(**kwargs)
-        await self.repository.add_memory(memory)
-        self.memories = self.repository.get_all_memories()  # Refresh local cache
-        return memory
-
-    async def register_memory(self, memory: Memory):
-        """
-        Register an existing Memory instance with the repository.
-
-        Args:
-            memory (Memory): The memory to register.
-        """
-        if not isinstance(memory, Memory):
-            raise ValueError("memory must be an instance of Memory")
-
-        await self.repository.add_memory(memory)
-        self.memories = self.repository.get_all_memories()  # Refresh local cache
+        try:
+            # Instantiate the memory object
+            memory = cls(**kwarg_dict)
+            # Add to repository
+            await self.repository.append_and_save_all(memory)
+            # Update in-memory cache
+            self.memories = self.repository.get_all_memories()
+            logging.info(f"Added memory: {memory}")
+            return memory
+        except Exception as e:
+            logging.error(f"Failed to add memory: {e}")
+            raise
 
     async def clear_all_memories(self):
         """
@@ -88,6 +77,7 @@ class MemoryHandler:
         """
         await self.repository.clear_all_memories()
         self.memories = []
+        logging.info("All memories have been cleared.")
 
     async def summarize_all_memories(self) -> str:
         """
@@ -115,26 +105,28 @@ class MemoryHandler:
             logging.error(f"Failed to generate summary: {e}")
             summary = "Error: Unable to generate summary."
 
+        logging.info("Generated summary of all memories.")
         return summary
 
-    async def summarize_conversation(self, conversation: Conversation) -> Conversation:
+    async def summarize_conversation(self, transcript: str) -> Conversation:
         """
-        Generate a summary for a specific conversation and update it.
+        Generate a summary for a specific conversation and add it to memories.
 
         Args:
-            conversation (Conversation): The conversation to summarize.
+            transcript (str): The transcript of the conversation.
 
         Returns:
             Conversation: The updated conversation with the summary.
         """
-        if not conversation.transcript:
-            conversation.summary = "No transcript provided."
-            await self.repository.save_all()  # Persist the change
+        if not transcript:
+            logging.warning("No transcript provided for summarization.")
+            summary = "No transcript provided."
+            conversation = await self.add_memory(Conversation, {'transcript':"", 'summary':summary})
             return conversation
 
         messages = [
             {"role": "system", "content": "You are a summarization assistant."},
-            {"role": "user", "content": f"Summarize this conversation:\n\n{conversation.transcript}"}
+            {"role": "user", "content": f"Summarize this conversation:\n\n{transcript}"}
         ]
 
         summary = ""
@@ -145,9 +137,11 @@ class MemoryHandler:
             logging.error(f"Failed to generate summary: {e}")
             summary = "Error: Unable to generate summary."
 
-        conversation.summary = summary
-        await self.repository.save_all()  # Persist the change
+        # Create and add the Conversation memory
+        conversation = await self.add_memory(Conversation, {'transcript':transcript, 'summary':summary})
+        logging.info(f"Summarized conversation: {conversation}")
         return conversation
+
 
     def get_memories(self) -> List[Memory]:
         """
@@ -156,7 +150,7 @@ class MemoryHandler:
         Returns:
             List[Memory]: The in-memory list of Memory instances.
         """
-        return self.memories[:]
+        return self.memories.copy()
 
     def _format_memory(self, memory: Memory) -> str:
         """

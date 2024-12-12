@@ -6,7 +6,7 @@ from infrastructure.models.memory import Memory
 
 @dataclass(kw_only=True)
 class Person(Memory):
-    mem_type: str = field(default="Person", init=False)
+    mem_type: str = field(default="Person")
     name: str
     relation: str
     alive: bool = None

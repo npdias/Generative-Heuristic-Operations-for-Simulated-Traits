@@ -1,0 +1,31 @@
+{
+    "memories": [
+        {
+            "mem_type": "Person",
+            "ID": "4b8fcc5fe4304c08884ecfa2bf42c89d",
+            "entryDate": 1734034075.3827868,
+            "name": "Default",
+            "relation": "self",
+            "alive": true,
+            "isSelf": true,
+            "relationships": [],
+            "currentObjectives": [],
+            "miscDetails": [],
+            "personality": ""
+        },
+        {
+            "mem_type": "Conversation",
+            "ID": "93b564c08205418482c5f26f494f5fff",
+            "entryDate": 1734034255.9424295,
+            "transcript": "[User]: Test\n[Assistant]: It looks like you're testing the system. How can I assist you today?",
+            "summary": "The user initiated a test, and the assistant responded by offering help for the user's needs."
+        },
+        {
+            "mem_type": "Conversation",
+            "ID": "ad349db88f264a59909809e163f63923",
+            "entryDate": 1734034303.1859329,
+            "transcript": "[User]: test\n[Assistant]: It looks like you're testing the system. How can I assist you today?\n[User]: haiku dog and cat \n[Assistant]: In sunlit garden,  \nA cat watches from the shade,  \nDog wags, tail a blur.  ",
+            "summary": "The user initiated a test, and the assistant offered to help. The user then requested a haiku about a dog and a cat, to which the assistant responded with a haiku describing the scene."
+        }
+    ]
+}
