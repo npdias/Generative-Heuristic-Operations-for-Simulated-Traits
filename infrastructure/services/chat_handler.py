@@ -53,6 +53,9 @@ class ChatHandler:
             logging.debug(f"Response added to chat log: {assistant_response}")
             yield assistant_response
 
+    async def add_chat_passthrough(self, role, content):
+        await self.chat_repository.add_chat({"role": "assistant", "content": content})
+
     async def fetch_chat_history(self) -> List[Dict[str, str]]:
         """
         Retrieve the current chat history.

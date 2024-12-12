@@ -16,5 +16,6 @@ class Person(Memory):
     miscDetails: List[Any] = field(default_factory=list)
     personality: str = field(default_factory=str)
 
+
     def __str__(self):
         return f"[{self.mem_type}] Name: {self.name}, Relation: {self.relation}, IsSelf: {self.isSelf}, Alive: {self.alive}"

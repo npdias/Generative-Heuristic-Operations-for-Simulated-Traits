@@ -19,3 +19,4 @@ class Memory:
     mem_type: str
     ID: str = field(default_factory=lambda: uuid.uuid4().hex)
     entryDate: float = field(default_factory=lambda: time.time())
+

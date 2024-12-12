@@ -59,18 +59,6 @@ class MemoryRepository:
                 for obj in json_data['memories']:
                     class_obj = self.class_mapping[obj['mem_type']](**obj)
                     self.memories.append(class_obj)
-
-                print(self.memories)
-                # for md in memories_data:
-                #     mem_type = md.get("mem_type")
-                #     cls = self.class_mapping.get(mem_type)
-                #     if cls:
-                #         # Filter only the fields that are part of the dataclass
-                #         fields = {k: v for k, v in md.items() if k in cls.__dataclass_fields__}
-                #         loaded_memories.append(cls(**fields))
-                #     else:
-                #         logging.warning(f"Unknown memory type '{mem_type}' encountered in file.")
-
                 logging.info(f"Successfully loaded memories from {self.file_location}.")
                 return True
         except json.JSONDecodeError as e:

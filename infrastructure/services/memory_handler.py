@@ -16,6 +16,7 @@ from typing import List, Type
 
 from infrastructure.repositories.memory_repository import MemoryRepository
 from infrastructure.services.llm_service import LLMService
+from config import *
 
 
 class MemoryHandler:
@@ -79,22 +80,17 @@ class MemoryHandler:
         self.memories = []
         logging.info("All memories have been cleared.")
 
-    async def summarize_all_memories(self) -> str:
+    async def summarize_memories(self, content ='', prompt: str = DEFAULT_MEM_PROMPT) -> str:
         """
         Generate a summary of all currently loaded memories using the LLMService.
 
         Returns:
             str: A textual summary of all memories.
         """
-        if not self.memories:
-            return "No memories to summarize."
-
-        # Convert memories to a readable format.
-        memories_text = "\n".join(self._format_memory(m) for m in self.memories)
-
+        content = content if content != '' else self.memories
         messages = [
-            {"role": "system", "content": "You are a summarization assistant."},
-            {"role": "user", "content": f"Summarize the following memories:\n\n{memories_text}"}
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": str(content)}
         ]
 
         summary = ""
@@ -108,7 +104,9 @@ class MemoryHandler:
         logging.info("Generated summary of all memories.")
         return summary
 
-    async def summarize_conversation(self, transcript: str) -> Conversation:
+
+
+    async def summarize_conversation(self, transcript: str) -> Memory:
         """
         Generate a summary for a specific conversation and add it to memories.
 
@@ -124,20 +122,7 @@ class MemoryHandler:
             conversation = await self.add_memory(Conversation, {'transcript':"", 'summary':summary})
             return conversation
 
-        messages = [
-            {"role": "system", "content": "You are a summarization assistant."},
-            {"role": "user", "content": f"Summarize this conversation:\n\n{transcript}"}
-        ]
-
-        summary = ""
-        try:
-            async for chunk in self.llm_service.send_completion(messages=messages, stream=False):
-                summary += chunk
-        except Exception as e:
-            logging.error(f"Failed to generate summary: {e}")
-            summary = "Error: Unable to generate summary."
-
-        # Create and add the Conversation memory
+        summary = await self.summarize_memories(content=transcript, prompt=DEFAULT_CONVO_PROMPT)
         conversation = await self.add_memory(Conversation, {'transcript':transcript, 'summary':summary})
         logging.info(f"Summarized conversation: {conversation}")
         return conversation
@@ -151,24 +136,3 @@ class MemoryHandler:
             List[Memory]: The in-memory list of Memory instances.
         """
         return self.memories.copy()
-
-    def _format_memory(self, memory: Memory) -> str:
-        """
-        Convert a Memory instance to a readable string format.
-
-        Args:
-            memory (Memory): The memory instance to format.
-
-        Returns:
-            str: A string representation of the memory.
-        """
-        if isinstance(memory, Conversation):
-            return f"[{memory.mem_type}] Transcript: {memory.transcript}\nSummary: {memory.summary}"
-        elif isinstance(memory, Person):
-            return f"[{memory.mem_type}] Name: {memory.name}, Relation: {memory.relation}, IsSelf: {memory.isSelf}, Alive: {memory.alive}"
-        elif isinstance(memory, Event):
-            return f"[{memory.mem_type}] Title: {memory.title}, Description: {memory.description}, Date: {memory.date}"
-        elif isinstance(memory, Fact):
-            return f"[{memory.mem_type}] Statement: {memory.statement}, Source: {memory.source}"
-        else:
-            return f"[{memory.mem_type}] ID: {memory.ID}, EntryDate: {memory.entryDate}"
