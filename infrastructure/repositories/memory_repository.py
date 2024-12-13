@@ -53,9 +53,6 @@ class MemoryRepository:
                     logging.warning(f"Memory file is empty at {self.file_location}. Starting with an empty list.")
                     self.memories = []
                     return False
-
-
-
                 for obj in json_data['memories']:
                     class_obj = self.class_mapping[obj['mem_type']](**obj)
                     self.memories.append(class_obj)
@@ -77,12 +74,11 @@ class MemoryRepository:
         Raises:
             Exception: If the file cannot be written due to IO errors.
         """
-        print(self.memories)
         try:
             os.makedirs(os.path.dirname(self.file_location), exist_ok=True)
             async with aiofiles.open(self.file_location, mode="w") as file:
                 data = {"memories": [obj.__dict__ for obj in self.memories]}
-                print(data)
+                logging.debug(f'data: {data}')
                 await file.write(json.dumps(data, indent=4))
                 logging.info(f"Successfully saved memories to {self.file_location}.")
         except Exception as e:
