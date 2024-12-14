@@ -1,14 +1,49 @@
-# ~application/console_app.py
+"""
+console_app.py
+==============
+This module provides a console-based interface for interacting with the application.
+It allows users to send input, receive responses, and manage sessions directly
+from the command line.
+
+Key Responsibilities:
+- Initialize and manage the console application.
+- Handle user input and display responses from the assistant.
+- Support session start, end, and clean shutdown.
+
+Classes:
+- `ConsoleApp`: Main class for managing the console interface.
+
+Example Usage:
+```python
+from application.console_app import ConsoleApp
+
+app = ConsoleApp()
+app.run()
+```
+"""
 
 import asyncio
 import logging
 from infrastructure.coordinator import Coordinator
 
 class ConsoleApp:
+    """
+    Provides a console-based interface for interacting with the assistant.
+
+    Attributes:
+        coordinator (Coordinator): Handles the core workflows and interactions.
+    """
+
     def __init__(self):
+        """
+        Initialize the ConsoleApp with a Coordinator instance.
+        """
         self.coordinator = Coordinator()
 
     async def run(self):
+        """
+        Start the console application, managing user input and assistant responses.
+        """
         logging.info("Starting ConsoleApp...")
 
         # Ensure the session starts before entering the loop
