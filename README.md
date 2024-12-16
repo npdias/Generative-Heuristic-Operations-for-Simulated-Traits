@@ -44,7 +44,15 @@ Thematic inspirations like C-3PO and Marvin the Paranoid Android guide the frame
 ```mermaid
 graph TD
     subgraph Application Layer
+        app_handlers[Handlers]
         app_console[Console App]
+        app_coordinator[Coordinator]
+    end
+
+    subgraph Data Layer
+        data_chat[Chat Logs]
+        data_memory[Memory Storage]
+        data_backup[Memory Backup]
     end
 
     subgraph Infrastructure Layer
@@ -54,27 +62,27 @@ graph TD
         infra_coordinator[Coordinator]
     end
 
-    subgraph Data Layer
-        data_chat[Chat Logs]
-        data_memory[Memory Storage]
-    end
-
     app_console -->|Interacts with| infra_coordinator
-    infra_coordinator -->|Manages| infra_models
-    infra_coordinator -->|Uses| infra_repos
-    infra_coordinator -->|Invokes| infra_services
+    infra_coordinator -->|Manages| app_handlers
+    app_handlers -->|Uses| infra_services
+    infra_services -->|Handles| infra_models
+    infra_services -->|Persists Data| infra_repos
     infra_repos -->|Reads/Writes| data_chat
     infra_repos -->|Reads/Writes| data_memory
+    data_memory -->|Backups| data_backup
 ```
 
-
-The project is organized to prioritize modularity and clarity, aligning with the framework’s goal of simplifying feature integration and maintenance. Below is the current file structure:
+The project is organized to prioritize modularity and clarity, aligning with the framework’s goal of simplifying feature integration and maintenance. Below is the updated file structure:
 
 ```
 Generative-Heuristic-Operations-for-Simulated-Traits/
 ├── application/
+│   ├── handlers/
+│   │   ├── chat_handler.py  # Manages chat workflows
+│   │   └── memory_handler.py # Manages memory operations
 │   ├── __init__.py          # Application initialization
-│   └── console_app.py       # Console-based user interface
+│   ├── console_app.py       # Console-based user interface
+│   └── coordinator.py       # Coordinates workflows between handlers
 ├── data/
 │   ├── chat.json            # Persistent chat log storage
 │   ├── memories.json        # Persistent memory storage
@@ -93,10 +101,7 @@ Generative-Heuristic-Operations-for-Simulated-Traits/
 │   │   └── memory_repository.py # Memory repository
 │   ├── services/            # Business logic and external service interactions
 │   │   ├── __init__.py
-│   │   ├── chat_handler.py  # Manages chat workflows
-│   │   ├── llm_service.py   # Interacts with the language model
-│   │   └── memory_handler.py # Manages memory operations
-│   └── coordinator.py       # Links chat and memory workflows
+│   │   └── llm_service.py   # Interacts with the language model
 ├── additional docs/
 │   ├── generated_workflow.png # Workflow visualization
 │   ├── old codebase.md        # Log of earlier iterations
@@ -114,7 +119,7 @@ Generative-Heuristic-Operations-for-Simulated-Traits/
 
 1. **Layered Organization**:
 
-   - **Application Layer**: Manages user interaction and workflows (e.g., `console_app.py`).
+   - **Application Layer**: Manages user interaction and workflows (e.g., `console_app.py`, `handlers`, `coordinator.py`).
    - **Infrastructure Layer**: Includes core models, repositories, and services for data and workflow management.
    - **Data Layer**: Stores persistent data in JSON format for simplicity and portability.
 
