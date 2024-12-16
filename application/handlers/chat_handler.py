@@ -16,7 +16,7 @@ Classes:
 
 Example Usage:
 ```python
-from infrastructure.services.chat_handler import ChatHandler
+from infrastructure.services import ChatHandler
 
 chat_handler = ChatHandler()
 response = await chat_handler.process_user_input("Hello!", stream=True)
@@ -29,9 +29,9 @@ import asyncio
 import logging
 from typing import AsyncGenerator, List, Dict
 
-from infrastructure.models import Conversation
-from infrastructure.repositories.chat_repository import ChatRepository
-from infrastructure.services.llm_service import LLMService
+
+
+
 
 class ChatHandler:
     """
@@ -47,8 +47,10 @@ class ChatHandler:
         """
         Initialize the ChatHandler with a ChatRepository and an LLMService instance.
         """
+        from infrastructure import ChatRepository, LLMService
         self.chat_repository = ChatRepository()
         self.llm_service = LLMService()
+
 
     async def process_user_input(self, user_input: str, stream: bool = False) -> AsyncGenerator[str, None]:
         """
@@ -61,44 +63,37 @@ class ChatHandler:
         Yields:
             str: Response chunks in streaming mode or the full response in non-streaming mode.
         """
-        logging.info("Starting to process user input: '%s'", user_input)
+        logging.info("Processing user input: %s", user_input)
 
-        try:
-            # Add the user message to the chat log
-            await self.chat_repository.add_chat({"role": "user", "content": user_input})
-            logging.debug("User input added to chat log.")
+        # Add the user message to the chat log
+        await self.chat_repository.add_chat({"role": "user", "content": user_input})
+        logging.debug("User input added to chat log.")
 
-            # Retrieve updated context
-            prior_context = self.chat_repository.load_chat_log()
-            logging.debug("Loaded chat context with %d messages.", len(prior_context))
+        # Retrieve updated context
+        prior_context = self.chat_repository.load_chat_log()
+        messages = prior_context
 
-            messages = prior_context
+        if stream:
+            logging.info("Streaming response enabled.")
+            assistant_response = ""
+            async for chunk in self.llm_service.send_completion(messages, stream=True):
+                assistant_response += chunk
+                yield chunk
 
-            if stream:
-                logging.info("Streaming response mode enabled.")
-                assistant_response = ""
-                async for chunk in self.llm_service.send_completion(messages, stream=True):
-                    assistant_response += chunk
-                    yield chunk
-                logging.debug("Streaming response complete. Final response length: %d characters.", len(assistant_response))
+            # Store the complete assistant response
+            await self.chat_repository.add_chat({"role": "assistant", "content": assistant_response})
+            logging.debug("Assistant response stored in chat log.")
 
-                # Store the complete assistant response
-                await self.chat_repository.add_chat({"role": "assistant", "content": assistant_response})
-                logging.info("Assistant response stored successfully.")
-            else:
-                logging.info("Non-streaming response mode selected.")
-                assistant_response = ""
-                async for chunk in self.llm_service.send_completion(messages, stream=False):
-                    assistant_response += chunk
-                logging.debug("Non-streaming response generated. Final response length: %d characters.", len(assistant_response))
+        else:
+            logging.info("Non-streaming response requested.")
+            assistant_response = ""
+            async for chunk in self.llm_service.send_completion(messages, stream=False):
+                assistant_response += chunk
 
-                # Store the complete assistant response
-                await self.chat_repository.add_chat({"role": "assistant", "content": assistant_response})
-                logging.info("Assistant response stored successfully.")
-                yield assistant_response
-        except Exception as e:
-            logging.error("Error while processing user input: %s", e, exc_info=True)
-            yield "Error: Unable to process the input."
+            # Store the complete assistant response
+            await self.chat_repository.add_chat({"role": "assistant", "content": assistant_response})
+            logging.debug("Assistant response stored in chat log.")
+            yield assistant_response
 
     async def add_chat_passthrough(self, role: str, content: str):
         """

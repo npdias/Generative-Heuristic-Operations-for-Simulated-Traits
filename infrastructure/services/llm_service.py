@@ -14,7 +14,7 @@ Classes:
 
 Example Usage:
 ```python
-from infrastructure.services.llm_service import LLMService
+from infrastructure.services import LLMService
 
 llm_service = LLMService()
 messages = [

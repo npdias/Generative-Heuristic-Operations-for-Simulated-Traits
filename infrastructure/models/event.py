@@ -39,9 +39,9 @@ class Event(Memory):
         note (str): A descriptive note about the event.
         dates (List[Any]): A list of dates associated with the event.
     """
-    mem_type: str = field(default="Event")
     note: str
     dates: List[Any] = field(default_factory=list)
+    mem_type: str = field(default="Event")
 
     def __str__(self):
         """

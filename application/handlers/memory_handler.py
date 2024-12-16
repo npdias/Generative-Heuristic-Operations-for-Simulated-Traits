@@ -16,7 +16,7 @@ Classes:
 
 Example Usage:
 ```python
-from infrastructure.services.memory_handler import MemoryHandler
+from infrastructure.services import MemoryHandler
 
 memory_handler = MemoryHandler()
 await memory_handler.initialize()
@@ -29,13 +29,9 @@ import asyncio
 import logging
 from typing import List, Type
 
-from infrastructure.models.memory import Memory
-from infrastructure.models.event import Event
-from infrastructure.models.fact import Fact
-from infrastructure.models.person import Person
-from infrastructure.models.conversation import Conversation
-from infrastructure.repositories.memory_repository import MemoryRepository
-from infrastructure.services.llm_service import LLMService
+from infrastructure import Memory, Event, Fact, Person, Conversation
+from infrastructure import MemoryRepository
+from infrastructure import LLMService
 from config import DEFAULT_MEM_PROMPT, DEFAULT_CONVO_PROMPT
 
 class MemoryHandler:

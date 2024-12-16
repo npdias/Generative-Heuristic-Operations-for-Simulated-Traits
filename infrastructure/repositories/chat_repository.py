@@ -15,7 +15,7 @@ Classes:
 
 Example Usage:
 ```python
-from infrastructure.repositories.chat_repository import ChatRepository
+from infrastructure.repositories import ChatRepository
 
 repo = ChatRepository()
 await repo.load_chat()
@@ -32,6 +32,7 @@ from typing import List, Dict
 import os
 from datetime import datetime
 from config import DATA_DIR
+
 
 class ChatRepository:
     """

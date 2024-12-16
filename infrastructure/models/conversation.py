@@ -37,9 +37,9 @@ class Conversation(Memory):
         transcript (str): The full transcript of the conversation.
         summary (str): A brief summary of the conversation's key details.
     """
-    mem_type: str = field(default="Conversation")
     transcript: str
     summary: str = ""
+    mem_type: str = field(default="Conversation")
 
     def __str__(self):
         """

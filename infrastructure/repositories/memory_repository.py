@@ -15,7 +15,7 @@ Classes:
 
 Example Usage:
 ```python
-from infrastructure.repositories.memory_repository import MemoryRepository
+from infrastructure.repositories import MemoryRepository
 
 repo = MemoryRepository()
 await repo.load_all()
@@ -29,11 +29,7 @@ import json
 import logging
 import aiofiles
 from typing import List
-from infrastructure.models.memory import Memory
-from infrastructure.models.event import Event
-from infrastructure.models.fact import Fact
-from infrastructure.models.person import Person
-from infrastructure.models.conversation import Conversation
+from infrastructure import Memory, Event, Fact, Person, Conversation
 from config import DATA_DIR
 
 class MemoryRepository:

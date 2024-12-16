@@ -46,9 +46,9 @@ class Person(Memory):
         miscDetails (List[Any]): Miscellaneous details about the person.
         personality (str): A string describing the person's personality traits.
     """
-    mem_type: str = field(default="Person")
     name: str
     relation: str
+    mem_type: str = field(default="Person")
     alive: bool = None
     isSelf: bool = False
     relationships: List[Dict[str, Any]] = field(default_factory=list)

@@ -15,7 +15,7 @@ Classes:
 
 Example Usage:
 ```python
-from infrastructure.services.coordinator import Coordinator
+from infrastructure.services import Coordinator
 
 coordinator = Coordinator()
 await coordinator.start_session()
@@ -24,9 +24,7 @@ await coordinator.end_session()
 """
 
 import logging
-from infrastructure.services.chat_handler import ChatHandler
-from infrastructure.services.memory_handler import MemoryHandler
-from infrastructure.models.conversation import Conversation
+from application.handlers import ChatHandler, MemoryHandler
 from config import *
 
 class Coordinator:
@@ -56,7 +54,7 @@ class Coordinator:
         logging.info("Fetching memory summary.")
         summary = await self.memory_handler.summarize_memories()
         initial_prompt = f"{INITIAL_PROMPT} Memory: {summary}"
-        await self.chat_handler.add_chat_passthrough(role='System', content=initial_prompt)
+        await self.chat_handler.add_chat_passthrough(role='system', content=initial_prompt)
 
         logging.info("Session start completed.")
 

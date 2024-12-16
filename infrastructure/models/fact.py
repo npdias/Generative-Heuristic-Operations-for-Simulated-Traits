@@ -27,7 +27,7 @@ print(fact)
 from dataclasses import dataclass, field
 from infrastructure.models.memory import Memory
 
-@dataclass
+@dataclass(kw_only=True)
 class Fact(Memory):
     """
     Represents a factual memory with a source and a descriptive note.
@@ -36,9 +36,9 @@ class Fact(Memory):
         source (str): The origin or reference of the fact.
         note (str): A detailed note describing the fact.
     """
-    mem_type: str = field(default="Fact")
     source: str
     note: str
+    mem_type: str = field(default="Fact")
 
     def __str__(self):
         """
