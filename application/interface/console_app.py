@@ -69,6 +69,6 @@ class ConsoleApp:
             print("\n")  # Add a newline after the response
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+    logging.basicConfig(level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
     app = ConsoleApp()
     asyncio.run(app.run())

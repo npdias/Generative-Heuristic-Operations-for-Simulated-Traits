@@ -24,6 +24,8 @@ await coordinator.end_session()
 """
 
 import logging
+
+
 from application.handlers import ChatHandler, MemoryHandler
 from config import *
 
@@ -42,6 +44,8 @@ class Coordinator:
         """
         self.chat_handler = ChatHandler()
         self.memory_handler = MemoryHandler()
+        self.session_initialized = False
+
 
     async def start_session(self):
         """
@@ -56,8 +60,14 @@ class Coordinator:
         cur_objectives = self.memory_handler.identity.currentObjectives
         initial_prompt = f"{INITIAL_PROMPT} **Memory:** {summary} **Other tracked objectives:** {cur_objectives}"
         await self.chat_handler.add_chat_passthrough(role='system', content=initial_prompt)
-
+        self.session_initialized = True
         logging.info("Session start completed.")
+
+    async def get_identity(self):
+        if self.session_initialized:
+            return self.memory_handler.identity.__dict__
+        else:
+            return None
 
     async def end_session(self):
         """
