@@ -30,9 +30,6 @@ import logging
 from typing import AsyncGenerator, List, Dict
 
 
-
-
-
 class ChatHandler:
     """
     Manages chat interactions, coordinating workflows and interactions with the LLM
@@ -72,10 +69,10 @@ class ChatHandler:
         # Retrieve updated context
         prior_context = self.chat_repository.load_chat_log()
         messages = prior_context
+        assistant_response = ""
 
         if stream:
             logging.info("Streaming response enabled.")
-            assistant_response = ""
             async for chunk in self.llm_service.send_completion(messages, stream=True):
                 assistant_response += chunk
                 yield chunk
@@ -86,7 +83,6 @@ class ChatHandler:
 
         else:
             logging.info("Non-streaming response requested.")
-            assistant_response = ""
             async for chunk in self.llm_service.send_completion(messages, stream=False):
                 assistant_response += chunk
 

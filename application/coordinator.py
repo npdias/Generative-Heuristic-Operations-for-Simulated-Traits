@@ -53,7 +53,8 @@ class Coordinator:
 
         logging.info("Fetching memory summary.")
         summary = await self.memory_handler.summarize_memories()
-        initial_prompt = f"{INITIAL_PROMPT} Memory: {summary}"
+        cur_objectives = self.memory_handler.identity.currentObjectives
+        initial_prompt = f"{INITIAL_PROMPT} **Memory:** {summary} **Other tracked objectives:** {cur_objectives}"
         await self.chat_handler.add_chat_passthrough(role='system', content=initial_prompt)
 
         logging.info("Session start completed.")

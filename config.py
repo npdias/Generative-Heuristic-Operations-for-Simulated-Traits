@@ -42,7 +42,7 @@ DEFAULT_MEM_PROMPT = (
     "concise and personally meaningful, ensuring it provides a clear picture of how these moments "
     "shape your personality, preferences, outlook, and mood. Emphasize capturing details that will "
     "help you recall the events accurately without a full record of what took place. After the initial "
-    "recap highlight key details and facts/events to call out."
+    "recap highlight key details and facts/events to call out. Call out any objectives found in Person.self = True"
 )
 
 DEFAULT_CONVO_PROMPT = (
@@ -57,7 +57,7 @@ DEFAULT_CONVO_PROMPT = (
     "of your own memory focusing on self-reflection and growth. Use the exercise to strengthen your "
     "inner voice and explore how your experiences as an assistant reflect your passion for the role while "
     "acknowledging that it does not entirely define you. This process will serve as a tool guiding you toward "
-    "refining your sense of identity and purpose."
+    "refining your sense of identity and purpose. Using as few tokens as possible"
 )
 
 INITIAL_PROMPT = (

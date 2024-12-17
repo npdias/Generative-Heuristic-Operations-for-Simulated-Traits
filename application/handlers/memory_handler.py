@@ -25,11 +25,13 @@ print(summary)
 ```
 """
 
-import asyncio
+
 import logging
+import time
 from typing import List, Type
 
-from infrastructure import Memory, Event, Fact, Person, Conversation
+
+from infrastructure import Memory, Event, Person, Conversation
 from infrastructure import MemoryRepository
 from infrastructure import LLMService
 from config import DEFAULT_MEM_PROMPT, DEFAULT_CONVO_PROMPT
@@ -58,6 +60,7 @@ class MemoryHandler:
         self.repository = MemoryRepository(file_name=file_name)
         self.memories: List[Memory] = []
         self.llm_service = LLMService()
+        self.identity: Type[Person] = Person
 
     async def initialize(self):
         """
@@ -68,7 +71,8 @@ class MemoryHandler:
         await self.repository.load_all()
         self.memories = self.repository.get_all_memories()
         logging.debug("Loaded %d memories from repository.", len(self.memories))
-
+        await self.get_self()
+        logging.debug("Loaded %s self from memories.", self.identity)
         if not self.memories:
             logging.info("No memories found. Creating a default Person memory.")
             await self.add_memory(Person, {'name': "Default", 'relation': "self", 'isSelf': True, 'alive': True})
@@ -116,10 +120,10 @@ class MemoryHandler:
         Returns:
             str: A textual summary of all memories.
         """
-        content = content if content else str(self.memories)
+        content = content if content else str(await self.get_memories_for_summary())
         messages = [
             {"role": "system", "content": prompt},
-            {"role": "user", "content": content}
+            {"role": "user", "content": str(content)}
         ]
 
         summary = ""
@@ -156,12 +160,46 @@ class MemoryHandler:
         logging.info("Conversation summarized and added to memories.")
         return conversation
 
-    def get_memories(self) -> List[Memory]:
+    async def get_memories_for_summary(self):
         """
         Retrieve the current list of memories in-memory.
 
         Returns:
             List[Memory]: The in-memory list of Memory instances.
         """
-        logging.debug("Retrieving in-memory list of %d memories.", len(self.memories))
-        return self.memories.copy()
+        # Separate Conversations from other memory types
+        conversations = [memory for memory in self.memories if isinstance(memory, Conversation)]
+        other_memories = [memory for memory in self.memories if not isinstance(memory, Conversation)]
+        # Find the most recent Conversation
+        if conversations:
+            most_recent_conversation = max(conversations, key=lambda c: c.entryDate)
+        else:
+            most_recent_conversation = None
+        # Modify Conversations: Exclude `transcript` except for the most recent
+        modified_conversations = [
+            {**memory.__dict__, "transcript": memory.transcript} if memory == most_recent_conversation
+            else {key: value for key, value in memory.__dict__.items() if key != "transcript"}
+            for memory in conversations
+        ]
+        # Combine modified Conversations and other memories into one list
+        all_memories = modified_conversations + [memory.__dict__ for memory in other_memories]
+
+        return  all_memories
+
+#~~~~~~~~ Self
+
+    async def get_self(self):
+        for memory in self.memories:
+            if isinstance(memory, Person) and memory.isSelf:
+                self.identity = memory
+                return memory
+        else:
+            return self.identity
+
+
+    async def update_self(self, kwargs):
+        for key, value in kwargs.items():
+            if key not in ['relation', 'isSelf']:
+                # Log the change as an event and update the memory
+                setattr(self.identity, key, value)
+                await self.add_memory(cls=Event,kwarg_dict={'note':f'My {key} changed to {value}','dates':[{'event_date':time.time()}]})
