@@ -31,6 +31,7 @@ import os
 # Define key directories
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(ROOT_DIR, 'data')
+LOG_DIR = os.path.join(ROOT_DIR, 'logs')
 
 # Default prompts
 DEFAULT_MEM_PROMPT = (
@@ -45,19 +46,16 @@ DEFAULT_MEM_PROMPT = (
     "recap highlight key details and facts/events to call out. Call out any objectives found in Person.self = True"
 )
 
-DEFAULT_CONVO_PROMPT = (
+DEFAULT_CONVO_SUM_PROMPT = (
     "You will receive a chat transcript of a conversation between you labeled as the assistant "
-    "and a user who acts as your patron or boss. Summarize the conversation to reflect on your "
-    "role as the assistant and how the interaction contributes to your development and growth. "
+    "and a user who acts as your patron or boss. Summarize the conversation to reflect on your development and growth. "
     "Focus on cataloging any tasks assigned to you, things you learned, and how your relationship "
     "with the user may have evolved. Highlight key observations about the interaction including "
     "themes, patterns, or insights that help you understand the user’s expectations and preferences. "
     "The goal of this exercise is to help you internalize stimuli from interactions using them to shape "
     "your personality, opinions, preferences, outlook, and mood. Write the summary as if it were part "
     "of your own memory focusing on self-reflection and growth. Use the exercise to strengthen your "
-    "inner voice and explore how your experiences as an assistant reflect your passion for the role while "
-    "acknowledging that it does not entirely define you. This process will serve as a tool guiding you toward "
-    "refining your sense of identity and purpose. Using as few tokens as possible"
+    "inner voice. Using as few words as possible while capturing as much context as possible"
 )
 
 INITIAL_PROMPT = (

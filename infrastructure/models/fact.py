@@ -1,27 +1,6 @@
 """
 fact.py
-=======
-This module defines the `Fact` class, a specialized type of memory for storing
-factual information. Facts include a source and a descriptive note to provide
-context and detail.
 
-Key Responsibilities:
-- Represent factual memories with source and note fields.
-- Extend the base `Memory` class with specific attributes for facts.
-
-Classes:
-- `Fact`: Memory subclass for storing factual information.
-
-Example Usage:
-```python
-from infrastructure.models.fact import Fact
-
-fact = Fact(
-    source="Wikipedia",
-    note="The Eiffel Tower was completed in 1889."
-)
-print(fact)
-```
 """
 
 from dataclasses import dataclass, field

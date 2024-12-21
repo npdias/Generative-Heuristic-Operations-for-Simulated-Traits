@@ -1,28 +1,6 @@
 """
 event.py
-========
-This module defines the `Event` class, a specialized type of memory for storing
-information about significant occurrences. Events can include associated dates
-and detailed notes.
 
-Key Responsibilities:
-- Represent event memories with notes and date-related fields.
-- Extend the base `Memory` class with specific attributes for events.
-- Provide methods for a clear textual representation.
-
-Classes:
-- `Event`: Memory subclass for storing event-related information.
-
-Example Usage:
-```python
-from infrastructure.models.event import Event
-
-event = Event(
-    note="Attended a workshop on AI ethics.",
-    dates=["2024-12-13"]
-)
-print(event)
-```
 """
 
 from dataclasses import dataclass, field

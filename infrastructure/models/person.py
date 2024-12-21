@@ -1,29 +1,5 @@
 """
 person.py
-=========
-This module defines the `Person` class, a specialized type of memory for storing
-data related to individuals. It includes attributes for their name, relationship,
-status, and other details.
-
-Key Responsibilities:
-- Represent individual memories with personal attributes.
-- Extend the base `Memory` class with specific attributes for people.
-- Provide methods for a clear textual representation.
-
-Classes:
-- `Person`: Memory subclass for storing individual-related information.
-
-Example Usage:
-```python
-from infrastructure.models.person import Person
-
-person = Person(
-    name="John Doe",
-    relation="Friend",
-    alive=True
-)
-print(person)
-```
 """
 
 from dataclasses import dataclass, field

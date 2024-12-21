@@ -1,27 +1,6 @@
 """
 conversation.py
-===============
-This module defines the `Conversation` class, a specialized type of memory for
-storing and managing conversational data. Conversations include both a transcript
-and a summary to encapsulate key details and themes.
 
-Key Responsibilities:
-- Represent conversational memories with transcript and summary fields.
-- Provide a clear textual representation of the conversation.
-
-Classes:
-- `Conversation`: Memory subclass for conversational data.
-
-Example Usage:
-```python
-from infrastructure.models.conversation import Conversation
-
-conversation = Conversation(
-    transcript="User: Hi\nAssistant: Hello!",
-    summary="A friendly greeting between the user and assistant."
-)
-print(conversation)
-```
 """
 
 from dataclasses import dataclass, field

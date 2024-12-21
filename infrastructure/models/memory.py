@@ -1,24 +1,6 @@
 """
 memory.py
-=========
-This module defines the `Memory` base class, which serves as the foundation for
-different types of memories, such as events, facts, conversations, and persons.
 
-Key Responsibilities:
-- Provide a common structure for memory objects.
-- Automatically generate unique identifiers and timestamps for each instance.
-- Serve as the base class for specialized memory types.
-
-Classes:
-- `Memory`: Base class for all memory types.
-
-Example Usage:
-```python
-from infrastructure.models.memory import Memory
-
-memory = Memory(mem_type="Generic")
-print(memory)
-```
 """
 
 import uuid
