@@ -122,6 +122,63 @@ classDiagram
 
 ---
 
+```mermaid
+flowchart TD
+ subgraph s1["Repositories"]
+        n6["chat_manager"]
+        n7["memory_manager"]
+  end
+ subgraph s2["Services"]
+        n8["gradio_ui"]
+        n10["service_coordinator (System Hub)"]
+        n9["llm_api"]
+  end
+ subgraph s3["Models"]
+        n14["Person"]
+        n15["Event"]
+        n17["Memory"]
+        n16["Conversation"]
+        n18["Fact"]
+  end
+ subgraph s4["Logs"]
+        n20["logs.txt"]
+  end
+ subgraph s5["Data"]
+        n2["memories.json"]
+        n1["chat.json"]
+  end
+    n7 --> n2
+    n6 --> n1
+    n10 --> n8 & n9 & n6 & n7
+    n13["Gradio Ui (Frontend)"] -- User Input --> n8
+    n8 -- Response --> n13
+    n9 <-- "Streaming/Non-Streaming" --> n19["OpenAi API"]
+    n17 --> n14 & n15 & n16 & n18 & n7
+    n16 --> n7
+    n14 --> n7
+    n18 --> n7
+    n15 --> n7
+    n6 -- Logs --> n20
+    n7 -- Logs --> n20
+    n10 -- Logs --> n20
+    n7@{ shape: rect}
+    n10@{ shape: rect}
+    n9@{ shape: rect}
+    n15@{ shape: rect}
+    n17@{ shape: rect}
+    n16@{ shape: rect}
+    n18@{ shape: rect}
+    n20@{ shape: cyl}
+    n2@{ shape: cyl}
+    n1@{ shape: cyl}
+    n13@{ shape: text}
+    n19@{ shape: text}
+    style n6 stroke-dasharray: 2,stroke:gray
+    style n13 stroke-width:2px,stroke-dasharray: 2
+```
+
+---
+
 ## Key Features
 
 ### 1. Memory Management
