@@ -6,15 +6,6 @@ from infrastructure.services.service_coordinator import Coordinator
 
 coordinator = Coordinator()
 
-async def system_start_up():
-    logging.info("Running system startup...")
-    await coordinator.build_system_instructions()
-    print('initial payload complete')
-    logging.info("System instructions built.")
-
-    # Start background inactivity monitoring
-    asyncio.create_task(coordinator.monitor_inactivity(inactivity_limit_minutes=3))
-    logging.info("Inactivity monitoring task started.")
 
 async def chat_loop(message, history):
     resp = ''
@@ -33,7 +24,7 @@ def create_gradio_interface():
 
 async def main_async():
     # Perform any initial startup tasks
-    await system_start_up()
+    await coordinator.system_start_up()
 
     # Launch Gradio non-blocking
     interface = create_gradio_interface()

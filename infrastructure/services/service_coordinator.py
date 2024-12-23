@@ -19,7 +19,7 @@ class Coordinator:
     async def update_last_activity(self):
         """Update the last activity timestamp in a thread-safe manner."""
         async with self.activity_lock:
-            print('updating last activity')
+            logging.info('updating last activity')
             self.last_activity_time = time.time()
 
     async def monitor_inactivity(self, inactivity_limit_minutes: int = 5):
@@ -30,7 +30,7 @@ class Coordinator:
             async with self.activity_lock:
                 elapsed_time = time.time() - self.last_activity_time
             if elapsed_time >= inactivity_limit_seconds:
-                print(f"Inactivity for {elapsed_time / 60:.2f} minutes detected. Triggering save_current_start_new.")
+                logging.info(f"Inactivity for {elapsed_time / 60:.2f} minutes detected. Triggering save_current_start_new.")
                 await self.save_current_start_new()
                 # Reset last activity to avoid immediate re-trigger
                 await self.update_last_activity()
@@ -53,7 +53,7 @@ class Coordinator:
         identity = self.mem_manager.get_identity()
         self.chat_manager.add_message(
             role='system',
-            content=f"{INITIAL_PROMPT} {recap} {identity}"
+            content=f"Your name is {identity['name']} {INITIAL_PROMPT} {recap} {identity}"
         )
         self.chat_manager.add_message(
             role='system',
@@ -89,7 +89,7 @@ class Coordinator:
             return
 
     async def save_current_start_new(self):
-        print('auto save',end='',flush=True)
+        logging.info('auto save started')
         logging.info("attempting Storing current conversation into memory and starting a new one.")
         conversation = await self.create_conversation()
         if conversation:
@@ -97,5 +97,23 @@ class Coordinator:
             await self.build_system_instructions(refresh=True)
             logging.info("save_current_start_new complete")
         else:
-            print("no conversation to clear")
-        print('\rauto save complete')
+            logging.info("no conversation to clear")
+        ogging.info('\rauto save complete')
+
+    async def save_current(self):
+        print('Saving', end='', flush=True)
+        logging.info("attempting Storing current conversation into memory")
+        await self.create_conversation()
+        print('\rSession SAVED')
+
+
+
+    async def system_start_up(self):
+        logging.info("Running system startup...")
+        await self.build_system_instructions()
+        logging.info('initial payload complete')
+        logging.info("System instructions built.")
+
+        # Start background inactivity monitoring
+        asyncio.create_task(self.monitor_inactivity(inactivity_limit_minutes=3))
+        logging.info("Inactivity monitoring task started.")
