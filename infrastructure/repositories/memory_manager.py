@@ -20,11 +20,11 @@ class MemoryManager:
         self.memories: List[Dict[str, Any]] = []
         self.memory_ids = set()
         self.self_person = None
-        self._load_memories()
+        self.load_memories()
         logging.info(f"MemoryManager initialized. File path: {self.file_path}")
         self.misc_details_collection: List[Dict[str, Any]] = []
 
-    def _load_memories(self):
+    def load_memories(self):
         """
         Load memories from the JSON file into memory and initialize caches.
         Handles errors related to malformed JSON or unexpected file content.

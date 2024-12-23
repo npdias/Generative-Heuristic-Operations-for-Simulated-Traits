@@ -97,5 +97,5 @@ class Coordinator:
             await self.build_system_instructions(refresh=True)
             logging.info("save_current_start_new complete")
         else:
-            logging.info("no conversation to clear")
+            print("no conversation to clear")
         print('\rauto save complete')
