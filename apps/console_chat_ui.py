@@ -26,9 +26,9 @@ async def chat_loop(user_input):
 async def console_interaction():
     user_input = ''
     while user_input.lower() not in safe_words:
-        user_input = input(f'{bold_start}User{bold_end}:\t')
+        user_input = input(f"{bold_start}User{bold_end}:\t")
         if user_input.lower() not in safe_words:
-            print(f'{bold_start}{bot_name}{bold_end}:\t',end='')
+            print(f"{bold_start}{bot_name}{bold_end}:\t",end='')
             async for resp in chat_loop(user_input):
                 print(resp,end='', flush=True)
             print('\n',end='')
@@ -43,10 +43,10 @@ async def console_interaction():
 async def start_ui():
     await coordinator.system_start_up()
     for _ in range(7):
-        print(f'{ascii_art[_*75:75*(1+_)]}',end="")
-        time.sleep(.13)
-    print(f'\n\n{' '*14}{bold_start}Generative-Heuristic-Operations-for-Simulated-Traits{bold_end}{' '*14}')
-    print(f'{'_'*80}\nto end type {bold_start}-esc{bold_end} and press {bold_start}enter{bold_end}\n{'_'*80}')
+        print(f"{ascii_art[_*75:75*(1+_)]}",end="")
+        time.sleep(.101)
+    print(f"\n\n{' '*14}{bold_start}Generative-Heuristic-Operations-for-Simulated-Traits{bold_end}{' '*14}")
+    print(f"{'_'*80}\nto end type {bold_start}-esc{bold_end} and press {bold_start}enter{bold_end}\n{'_'*80}")
 
 
 async def main():
