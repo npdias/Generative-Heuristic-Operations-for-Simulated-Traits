@@ -4,7 +4,7 @@ import time
 from infrastructure.models import Conversation
 from infrastructure.repositories.chat_manager import ChatManager
 from infrastructure.repositories.memory_manager import MemoryManager
-from infrastructure.services.llm_api import LLMService
+from infrastructure.services.llm_api.llm_api import LLMService
 from config import DEFAULT_MEM_PROMPT, INITIAL_PROMPT, DEFAULT_CONVO_SUM_PROMPT
 
 class Coordinator:
