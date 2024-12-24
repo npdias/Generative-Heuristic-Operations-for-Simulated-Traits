@@ -59,6 +59,7 @@ class Coordinator:
             role='system',
             content=f"{self.mem_manager.misc_details_collection}"
         )
+        self.chat_manager.add_message(role='system',content='Current User: Nicholas Dias') #TODO: Add a current User function
         return self.chat_manager.get_transcript()
 
     async def user_to_completion(self, message: str):

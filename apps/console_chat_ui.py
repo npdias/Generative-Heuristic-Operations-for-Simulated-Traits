@@ -54,4 +54,5 @@ async def main():
     await console_interaction()
 
 
-asyncio.run(main())
+def launch():
+    asyncio.run(main())
