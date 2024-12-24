@@ -28,14 +28,19 @@ async for chunk in llm_service.send_completion(messages, stream=True):
 """
 
 import os
+from infrastructure.services.llm_api.llm_tools_config import tools
 import logging
 from openai import OpenAI
 from typing import AsyncGenerator, List, Dict
 from dotenv import load_dotenv
 from dataclasses import dataclass
 
+
+
 # Load environment variables
 load_dotenv()
+
+
 
 @dataclass
 class LLMService:
@@ -66,24 +71,20 @@ class LLMService:
             logging.debug("Model: %s, Streaming: %s", LLMService.model, stream)
             logging.debug("Messages: %s", messages)
 
+            logging.info(f"Sending request {"in streaming mode." if stream else '.'}")
+            response = LLMService.client.chat.completions.create(
+                model=LLMService.model,
+                messages=messages,
+                stream=stream,
+                tools=tools
+            )
             if stream:
-                logging.info("Sending request in streaming mode.")
-                response = LLMService.client.chat.completions.create(
-                    model=LLMService.model,
-                    messages=messages,
-                    stream=True,
-                )
                 for chunk in response:
                     delta = chunk.choices[0].delta
                     if delta.content:
                         logging.debug("Received stream chunk: %s", delta.content)
                         yield delta.content
             else:
-                logging.info("Sending request in non-streaming mode.")
-                response = LLMService.client.chat.completions.create(
-                    model=LLMService.model,
-                    messages=messages,
-                )
                 content = response.choices[0].message.content
                 logging.debug("Received response: %s", content)
                 yield content
