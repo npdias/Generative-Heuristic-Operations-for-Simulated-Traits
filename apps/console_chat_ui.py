@@ -34,9 +34,9 @@ async def console_interaction():
             print('\n',end='')
             await coordinator.update_last_activity()
     else:
-        print(f'\n{'_'*80}\n')
+        print(f"\n{'_'*80}\n")
         await coordinator.save_current()
-        print(f'Session Ended: Goodbye\n{'_'*80}')
+        print(f"Session Ended: Goodbye\n{'_'*80}")
         exit(0)
 
 

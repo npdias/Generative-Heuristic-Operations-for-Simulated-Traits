@@ -71,7 +71,7 @@ class LLMService:
             logging.debug("Model: %s, Streaming: %s", LLMService.model, stream)
             logging.debug("Messages: %s", messages)
 
-            logging.info(f"Sending request {"in streaming mode." if stream else '.'}")
+            logging.info(f"Sending request {'in streaming mode.' if stream else '.'}")
             response = LLMService.client.chat.completions.create(
                 model=LLMService.model,
                 messages=messages,
