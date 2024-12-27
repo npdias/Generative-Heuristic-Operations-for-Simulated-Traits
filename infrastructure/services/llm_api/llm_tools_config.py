@@ -2,73 +2,47 @@ tools=[
     {
       "type": "function",
       "function": {
-        "name": "rank_complexity",
-        "strict": True,
+        "name": "collect_task_info",
+        "description": "When the user identifies a task or objective, collect information about the task as well as any relevant dates.",
         "parameters": {
           "type": "object",
           "required": [
-            "request",
-            "complexity_level"
+            "task_name",
+            "description",
+            "priority",
+            "start_date",
+            "due_date",
+            "status"
           ],
           "properties": {
-            "request": {
+            "task_name": {
               "type": "string",
-              "description": "The question or request to be ranked"
+              "description": "Name of the task or objective"
             },
-            "complexity_level": {
-              "enum": [
-                "low",
-                "medium",
-                "high",
-                "extreme"
-              ],
+            "description": {
               "type": "string",
-              "description": "The complexity ranking of the request"
+              "description": "Detailed description of the task"
+            },
+            "priority": {
+              "type": "string",
+              "description": "Priority level of the task (e.g., High, Medium, Low)"
+            },
+            "start_date": {
+              "type": "string",
+              "description": "Start date for the task, in YYYY-MM-DD format"
+            },
+            "due_date": {
+              "type": "string",
+              "description": "Due date for the task, in YYYY-MM-DD format"
+            },
+            "status": {
+              "type": "string",
+              "description": "Current status of the task (e.g., Not Started, In Progress, Completed)"
             }
           },
           "additionalProperties": False
         },
-        "description": "Rank a question or request in complexity: low, medium, high, extreme"
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "provide_steps_for_complex_question",
-        "strict": True,
-        "parameters": {
-          "type": "object",
-          "required": [
-            "complexity_level",
-            "question",
-            "context",
-            "steps"
-          ],
-          "properties": {
-            "steps": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "description": "A specific step or consideration needed to solve the question."
-              },
-              "description": "List of steps or considerations to address the complex question."
-            },
-            "context": {
-              "type": "string",
-              "description": "Additional context or background information relevant to the question."
-            },
-            "question": {
-              "type": "string",
-              "description": "The question that requires a structured response for solving."
-            },
-            "complexity_level": {
-              "type": "string",
-              "description": "The level of complexity of the question, should be either 'high' or 'extreme'."
-            }
-          },
-          "additionalProperties": False
-        },
-        "description": "If given a high or extreme complexity question, provide a list of steps or considerations needed to solve the provided question. If a choice is needed, provide options or recomendations."
+        "strict": True
       }
     }
   ]

@@ -76,8 +76,11 @@ class Coordinator:
         logging.debug("User prompt stored in chat log.")
         response = ''
         async for chunk in self.llm_service.send_completion(messages=self.chat_manager.get_transcript(), stream=True):
-            response += chunk
-            yield chunk
+            if chunk['flag'] == 'message':
+                response += chunk['content']
+                yield chunk['content']
+            if chunk['flag'] == 'tool':
+                response += str(chunk['content'][0].function)
         self.chat_manager.add_message(role='assistant', content=response)
         logging.debug("Assistant response stored in chat log.")
 

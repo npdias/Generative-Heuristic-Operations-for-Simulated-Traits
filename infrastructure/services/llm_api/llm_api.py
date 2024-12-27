@@ -55,17 +55,8 @@ class LLMService:
     client: OpenAI = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     @staticmethod
-    async def send_completion(messages: List[Dict[str, str]], stream: bool = False) -> AsyncGenerator[str, None]:
-        """
-        Send a completion request to OpenAI's API.
+    async def send_completion(messages: List[Dict[str, str]], stream: bool = False):
 
-        Args:
-            messages (List[Dict[str, str]]): A list of message dictionaries with "role" and "content" keys.
-            stream (bool): Whether to enable streaming.
-
-        Yields:
-            str: Response chunks in streaming mode or the full response in non-streaming mode.
-        """
         try:
             logging.info("Preparing to send completion request to LLM.")
             logging.debug("Model: %s, Streaming: %s", LLMService.model, stream)
@@ -83,9 +74,14 @@ class LLMService:
                     delta = chunk.choices[0].delta
                     if delta.content:
                         logging.debug("Received stream chunk: %s", delta.content)
-                        yield delta.content
+                        yield {'flag': 'message', 'content': delta.content}
+                    elif delta.tool_calls:
+                        logging.debug("Received stream chunk: %s", delta.tool_calls)
+                        yield {'flag': 'tool', 'content': delta.tool_calls}
+
             else:
                 content = response.choices[0].message.content
+                print(response.choices[0].message.tool_calls)
                 logging.debug("Received response: %s", content)
                 yield content
 

@@ -42,9 +42,10 @@ async def console_interaction():
 
 async def get_cur_user():
     await coordinator.set_user(name = input(f"{bold_start}Input Name{bold_end}:\t"))
-    async for resp in chat_loop(message=f"{coordinator.set_user} has logged in", role='system'):
+    async for resp in chat_loop(message=f"{coordinator.cur_user} has logged in", role='system'):
         print(resp, end='', flush=True)
     print('\n', end='')
+
 
 async def start_ui():
     await coordinator.system_start_up()
