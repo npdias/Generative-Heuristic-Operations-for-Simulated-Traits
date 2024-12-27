@@ -18,8 +18,8 @@ ascii_art = """
 """
 
 
-async def chat_loop(user_input):
-    async for chunk in coordinator.user_to_completion(user_input):
+async def chat_loop(message: str, role: str = 'user'):
+    async for chunk in coordinator.user_to_completion(message = message, role = role):
         yield chunk
 
 
@@ -40,6 +40,12 @@ async def console_interaction():
         exit(0)
 
 
+async def get_cur_user():
+    await coordinator.set_user(name = input(f"{bold_start}Input Name{bold_end}:\t"))
+    async for resp in chat_loop(message=f"{coordinator.set_user} has logged in", role='system'):
+        print(resp, end='', flush=True)
+    print('\n', end='')
+
 async def start_ui():
     await coordinator.system_start_up()
     for _ in range(7):
@@ -51,6 +57,7 @@ async def start_ui():
 
 async def main():
     await start_ui()
+    await get_cur_user()
     await console_interaction()
 
 

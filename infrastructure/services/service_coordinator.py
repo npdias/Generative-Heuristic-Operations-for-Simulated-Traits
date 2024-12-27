@@ -14,7 +14,12 @@ class Coordinator:
         self.mem_manager = MemoryManager()
         self.last_activity_time = time.time()
         self.activity_lock = asyncio.Lock()
+        self.cur_user =""
         logging.info('Coordinator Initialized')
+
+    async def set_user(self,name:str=None):
+        self.cur_user=name
+        self.chat_manager.add_message(role='system',content=f"Current User: {self.cur_user}")
 
     async def update_last_activity(self):
         """Update the last activity timestamp in a thread-safe manner."""
@@ -59,18 +64,16 @@ class Coordinator:
             role='system',
             content=f"{self.mem_manager.misc_details_collection}"
         )
-        self.chat_manager.add_message(role='system',content='Current User: Nicholas Dias') #TODO: Add a current User function
         return self.chat_manager.get_transcript()
 
-    async def user_to_completion(self, message: str):
+    async def user_to_completion(self, message: str, role: str ='user'):
         """Process a user message and yield the assistant's streamed response."""
         self.chat_manager.add_message(
             role='system',
             content=f"Current time:{time.strftime('%a, %d %b %Y %I:%M:%S %p', time.localtime())} CST Location:Montgomery, TX 77356"
         )
-        self.chat_manager.add_message(role='user', content=message)
+        self.chat_manager.add_message(role=role, content=message)
         logging.debug("User prompt stored in chat log.")
-
         response = ''
         async for chunk in self.llm_service.send_completion(messages=self.chat_manager.get_transcript(), stream=True):
             response += chunk
