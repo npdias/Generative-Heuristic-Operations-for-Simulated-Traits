@@ -1,3 +1,4 @@
+import json
 import logging
 import asyncio
 import time
@@ -15,6 +16,7 @@ class Coordinator:
         self.last_activity_time = time.time()
         self.activity_lock = asyncio.Lock()
         self.cur_user =""
+        self.last_response = None
         logging.info('Coordinator Initialized')
 
     async def set_user(self,name:str=None):
@@ -68,21 +70,35 @@ class Coordinator:
 
     async def user_to_completion(self, message: str, role: str ='user'):
         """Process a user message and yield the assistant's streamed response."""
-        self.chat_manager.add_message(
-            role='system',
-            content=f"Current time:{time.strftime('%a, %d %b %Y %I:%M:%S %p', time.localtime())} CST Location:Montgomery, TX 77356"
-        )
+        if role == 'user':
+            self.chat_manager.add_message(
+                role='system',
+                content=f"Current time:{time.strftime('%a, %d %b %Y %I:%M:%S %p', time.localtime())} CST Location:Montgomery, TX 77356"
+            )
         self.chat_manager.add_message(role=role, content=message)
         logging.debug("User prompt stored in chat log.")
-        response = ''
+        async for chunk in self._stream_completion():
+            yield chunk
+        if LLMService.last_response.get('tool_call_id'):
+            async for chunk in self._tool_completion(LLMService.last_response):
+                yield chunk
+
+    async def _stream_completion(self):
+        response = None
         async for chunk in self.llm_service.send_completion(messages=self.chat_manager.get_transcript(), stream=True):
-            if chunk['flag'] == 'message':
-                response += chunk['content']
-                yield chunk['content']
-            if chunk['flag'] == 'tool':
-                response += str(chunk['content'][0].function)
-        self.chat_manager.add_message(role='assistant', content=response)
+            response = chunk['message']
+            yield str(chunk['chunk'])
+        LLMService.last_response = json.loads(response)
+        logging.debug(f"Response ~ {LLMService.last_response}")
+        self.chat_manager.add_response(LLMService.last_response)
         logging.debug("Assistant response stored in chat log.")
+
+    async def _tool_completion(self,tool_response):
+        content = dict(type='text', text='{"status\":"success\"}')
+        self.chat_manager.add_response(dict(role='tool', tool_call_id=tool_response.get('tool_call_id'), content=[content]))
+        async for chunk in self._stream_completion():
+            yield chunk
+
 
     async def create_conversation(self):
         self.chat_manager.load_transcript()
@@ -105,14 +121,13 @@ class Coordinator:
             logging.info("save_current_start_new complete")
         else:
             logging.info("no conversation to clear")
-        ogging.info('\rauto save complete')
+        logging.info('\rauto save complete')
 
     async def save_current(self):
         print('Saving', end='', flush=True)
         logging.info("attempting Storing current conversation into memory")
         await self.create_conversation()
         print('\rSession SAVED')
-
 
 
     async def system_start_up(self):

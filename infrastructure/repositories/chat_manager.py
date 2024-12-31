@@ -45,6 +45,13 @@ class ChatManager:
         })
         self.save_transcript()
 
+    def add_response(self, response):
+        """
+        Takes formatted json from api response and adds a new message to the transcript.
+        """
+        self.transcript.append(response)
+        self.save_transcript()
+
     def get_transcript(self, trimmed:bool = False):
         """
         Returns the in-memory transcript or trimmed version of in-memory transcript without system msg
