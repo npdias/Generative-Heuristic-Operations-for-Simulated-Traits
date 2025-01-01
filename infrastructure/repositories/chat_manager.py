@@ -2,12 +2,15 @@ import json
 import time
 from config import DATA_DIR
 import os
+from infrastructure.services.logging_service import chat_manager_logger
+
 
 class ChatManager:
     def __init__(self):
         """
         Initializes the ChatManager with a file path to store/read chat logs.
         """
+        self.logger = chat_manager_logger
         self.file_path = os.path.join(DATA_DIR, 'chat.json')
         self.transcript = []
 
@@ -25,7 +28,7 @@ class ChatManager:
         except FileNotFoundError:
             self.transcript = []
         except json.JSONDecodeError:
-            print("Error reading JSON file. The file may be corrupted.")
+            self.logger.error("Error reading JSON file. The file may be corrupted.")
 
     def save_transcript(self):
         """
@@ -43,6 +46,7 @@ class ChatManager:
             "content": content,
             "timestamp": time.time()
         })
+        self.logger.debug(f"Add Message:\trole:{role}\tcontent:{content}")
         self.save_transcript()
 
     def add_response(self, response):
@@ -50,6 +54,7 @@ class ChatManager:
         Takes formatted json from api response and adds a new message to the transcript.
         """
         self.transcript.append(response)
+        self.logger.debug(f"Message Directly added (add_response):\tcontent:{response}")
         self.save_transcript()
 
     def get_transcript(self, trimmed:bool = False):
@@ -65,22 +70,3 @@ class ChatManager:
     def clear_transcript(self):
         self.transcript = []
         self.save_transcript()
-
-
-# Usage
-if __name__ == "__main__":
-    chat_manager = ChatManager()
-
-    # # Add messages
-    # chat_manager.add_message("system", "Welcome to the chat!")
-    # chat_manager.add_message("user", "Hello, system!")
-
-    # Load from Json
-    chat_manager.load_transcript()
-
-    # Access in-memory transcript
-    print("Transcript in memory:")
-    print(chat_manager.get_transcript(trimmed=True))
-
-    # Save transcript to file
-    # chat_manager.save_transcript()

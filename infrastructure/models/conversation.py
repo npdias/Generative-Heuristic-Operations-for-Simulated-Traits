@@ -1,8 +1,3 @@
-"""
-conversation.py
-
-"""
-
 from dataclasses import dataclass, field
 from infrastructure.models.memory import Memory
 
@@ -15,6 +10,19 @@ class Conversation(Memory):
         mem_type (str): Specifies the type of memory, default is 'Conversation'.
         transcript (str): The full transcript of the conversation.
         summary (str): A brief summary of the conversation's key details.
+
+    Example:
+        Creating and using a Conversation instance:
+
+        ```python
+        conversation = Conversation(
+            transcript="User asked about project status.",
+            summary="Discussed project progress and next steps."
+        )
+        print(conversation)
+        ```
+
+        This represents a conversation memory detailing a discussion about project status.
     """
     transcript: str
     summary: str = ""

@@ -1,8 +1,3 @@
-"""
-event.py
-
-"""
-
 from dataclasses import dataclass, field
 from typing import List, Any
 from infrastructure.models.memory import Memory
@@ -16,6 +11,16 @@ class Event(Memory):
         mem_type (str): Specifies the type of memory, default is 'Event'.
         note (str): A descriptive note about the event.
         dates (List[Any]): A list of dates associated with the event.
+
+    Example:
+        An example of creating an Event instance:
+
+        ```python
+        event = Event(note="Team meeting", dates=["2025-01-01", "2025-01-02"])
+        print(event)
+        ```
+
+        This could represent a scheduled team meeting over two days.
     """
     note: str
     dates: List[Any] = field(default_factory=list)

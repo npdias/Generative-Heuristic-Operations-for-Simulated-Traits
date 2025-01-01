@@ -1,8 +1,3 @@
-"""
-fact.py
-
-"""
-
 from dataclasses import dataclass, field
 from infrastructure.models.memory import Memory
 

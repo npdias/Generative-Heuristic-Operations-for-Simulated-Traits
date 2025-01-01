@@ -33,6 +33,8 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(ROOT_DIR, 'data')
 LOG_DIR = os.path.join(ROOT_DIR, 'logs')
 
+#console logs
+console_log_toggle = False #True is both console and file output
 # Default prompts
 DEFAULT_MEM_PROMPT = "You will receive unsorted memories—your observations. Summarize them in under 300 words using your own words. Focus on key details and themes, avoiding unrelated commentary. Reflect on how these moments shape your personality, preferences, outlook, and mood. Keep it concise and personally meaningful so you can recall the events clearly without listing every detail. After this brief recap, call out key facts, events, and any objectives found under Person.self = True."
 
