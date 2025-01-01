@@ -6,6 +6,7 @@ remember_file = os.path.join(DATA_DIR, 'remember.json')
 
 async def function_router(name:str, arguments:dict):
     # which function to use
+    #TODO: need to add a script to summarize and group memories in the short term memories and store them as long term memories
     output = None
     if 'add' in name.lower():
         output = add_thought_to_json(arguments)
