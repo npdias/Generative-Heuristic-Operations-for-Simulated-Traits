@@ -1,4 +1,5 @@
 import json
+import time
 import os
 from config import DATA_DIR
 
@@ -28,6 +29,8 @@ def _read_remember_list():
 def add_thought_to_json(arguments):
     # if given json arg append dict to json file
     data = _read_remember_list()
+    arg_dict = arguments
+    arg_dict.update(dateString = time.strftime('%a, %d %b %Y %I:%M:%S %p CST', time.localtime()), entryDate=time.time())
     data.append(arguments)
     with open(remember_file, 'w') as file:
         json.dump(data, file, indent=4)

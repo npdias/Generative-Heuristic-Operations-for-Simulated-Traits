@@ -95,7 +95,7 @@ class Coordinator:
         logging.debug("Assistant response stored in chat log.")
 
     async def _tool_completion(self,tool_response):
-        tool_resp_msg =await function_router(name=tool_response['tool_calls'][0]['function']['name'],arguments= json.loads(tool_response['tool_calls'][0]['function']['arguments']))
+        tool_resp_msg =await function_router(name=tool_response['tool_calls'][0]['function']['name'],arguments= json.loads(str(tool_response['tool_calls'][0]['function']['arguments'])))
         content = dict(type='text', text=str({"response":f'{tool_resp_msg}'}))
         self.chat_manager.add_response(dict(role='tool', tool_call_id=tool_response.get('tool_call_id'), content=[content]))
         async for chunk in self._stream_completion():

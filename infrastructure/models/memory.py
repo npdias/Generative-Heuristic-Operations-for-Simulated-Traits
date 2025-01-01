@@ -20,6 +20,7 @@ class Memory:
     mem_type: str
     ID: str = field(default_factory=lambda: uuid.uuid4().hex)
     entryDate: float = field(default_factory=lambda: time.time())
+    dateString: str = field(default_factory=lambda: time.strftime('%a, %d %b %Y %I:%M:%S %p CST', time.localtime()))
 
     def __str__(self):
         """
