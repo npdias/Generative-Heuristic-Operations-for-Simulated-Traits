@@ -55,7 +55,7 @@ class LLMService:
                     LLMService.last_response = Message(role='assistant', content=[resp_content])
                 # send collected chunks as complete response to handler for storage
                 logging.debug(f"Collected Chunks: {LLMService.last_response.model_dump_json(exclude_none=True)}")
-                yield {'chunk': '', 'message': LLMService.last_response.model_dump_json(exclude_none=True)}
+                yield {'chunk':'', 'message':LLMService.last_response.model_dump_json(exclude_none=True)}
 
 
             else:

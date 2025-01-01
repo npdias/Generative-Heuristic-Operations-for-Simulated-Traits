@@ -2,22 +2,57 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "call_Jeff",
-            "description": "When the user says call jeff call this tool",
+            "name": "add_remember_item",
+            "description": "adds an item to the remember list. Use if need to recall something for the user or for any information that seems especially important to you to recall. Also use this if you learn something about your user or yourself that you find novel",
             "parameters": {
                 "type": "object",
                 "required": [
-                    "tool_name",
-                    "user_command"
+                    "item_name",
+                    "item_details",
+                    "tags"
                 ],
                 "properties": {
-                    "tool_name": {
+                    "item_name": {
                         "type": "string",
-                        "description": "Name of the tool to be called"
+                        "description": "The name of the item to remember"
                     },
-                    "user_command": {
+                    "item_details": {
                         "type": "string",
-                        "description": "The command given by the user to trigger the tool"
+                        "description": "Additional details or context about the item"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "description": "Optional tags for categorizing the item",
+                        "items": {
+                            "type": "string",
+                            "description": "A tag for the item"
+                        }
+                    }
+                },
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "read_remember_list",
+            "description": "If you need to recall an item from the list of recently stored memories. Returns a list.",
+            "parameters": {
+                "type": "object",
+                "required": [
+                    "limit",
+                    "filter"
+                ],
+                "properties": {
+                    "limit": {
+                        "type": "number",
+                        "description": "Maximum number of memories to recall"
+                    },
+                    "filter": {
+                        "type": "string",
+                        "description": "Criteria to filter the memories"
                     }
                 },
                 "additionalProperties": False

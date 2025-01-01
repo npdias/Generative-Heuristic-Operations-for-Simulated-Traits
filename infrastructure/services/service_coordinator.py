@@ -2,6 +2,7 @@ import json
 import logging
 import asyncio
 import time
+from infrastructure.services.agent_functions.agentic_memory_management import function_router
 from infrastructure.models import Conversation
 from infrastructure.repositories.chat_manager import ChatManager
 from infrastructure.repositories.memory_manager import MemoryManager
@@ -86,15 +87,16 @@ class Coordinator:
     async def _stream_completion(self):
         response = None
         async for chunk in self.llm_service.send_completion(messages=self.chat_manager.get_transcript(), stream=True):
-            response = chunk['message']
-            yield str(chunk['chunk'])
+            response = chunk.get('message')
+            yield chunk.get('chunk')
         LLMService.last_response = json.loads(response)
         logging.debug(f"Response ~ {LLMService.last_response}")
         self.chat_manager.add_response(LLMService.last_response)
         logging.debug("Assistant response stored in chat log.")
 
     async def _tool_completion(self,tool_response):
-        content = dict(type='text', text='{"status\":"success\"}')
+        tool_resp_msg =await function_router(name=tool_response['tool_calls'][0]['function']['name'],arguments= json.loads(tool_response['tool_calls'][0]['function']['arguments']))
+        content = dict(type='text', text=str({"response":f'{tool_resp_msg}'}))
         self.chat_manager.add_response(dict(role='tool', tool_call_id=tool_response.get('tool_call_id'), content=[content]))
         async for chunk in self._stream_completion():
             yield chunk
