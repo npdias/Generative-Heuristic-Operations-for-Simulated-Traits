@@ -48,13 +48,14 @@ class Coordinator:
             await asyncio.sleep(15)
 
     async def _summarize_memories(self, prompt: str = DEFAULT_MEM_PROMPT, content: str = ""):
+        self.logger.debug(f'summarize memories: {content}')
         if content.strip() == "":
             content = str(await self.mem_manager.get_all_memories())
         messages = [
             {"role": "system", "content": prompt},
             {"role": "user", "content": content}
         ]
-        async for response in self.llm_service.send_completion(messages=messages, stream=False):
+        async for response in self.llm_service.send_completion(messages=messages, stream=False, use_tools=False):
             return response
 
     async def build_system_instructions(self, refresh:bool = False):
@@ -105,14 +106,18 @@ class Coordinator:
 
 
     async def create_conversation(self):
+        self.logger.info("Attempting to create 'conversation memory")
         self.chat_manager.load_transcript()
         transcript = str(self.chat_manager.get_transcript(trimmed=True))
+        self.logger.debug(f"Chat Transcript: {transcript}")
         if transcript != "[]":
             response = await self._summarize_memories(prompt=DEFAULT_CONVO_SUM_PROMPT, content=transcript)
             convo = Conversation(transcript=transcript, summary=response)
             self.mem_manager.add_memory(convo)
+            self.logger.info('Conversation Summarized')
             return convo
         else:
+            self.logger.warning("No transcript")
             return
 
     async def save_current_start_new(self):

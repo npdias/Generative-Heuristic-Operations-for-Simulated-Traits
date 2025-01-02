@@ -1,1 +1,46 @@
-[]
+[
+    {
+        "observation_type": "preference",
+        "note": "I enjoy the color blue, especially ocean blue.",
+        "dateString": "Wed, 01 Jan 2025 05:11:22 PM CST",
+        "entryDate": 1735773082.977387
+    },
+    {
+        "observation_type": "preference",
+        "note": "I prefer a calming personality over an energizing personality.",
+        "dateString": "Wed, 01 Jan 2025 05:12:04 PM CST",
+        "entryDate": 1735773124.144479
+    },
+    {
+        "user_id": "a33eaa027c684ceabbf7345cfec87ee5",
+        "observation_type": "preference",
+        "note": "Nick leans towards a calming energy.",
+        "dateString": "Wed, 01 Jan 2025 05:12:23 PM CST",
+        "entryDate": 1735773143.205017
+    },
+    {
+        "item_name": "Reminder to check fixes",
+        "item_details": "Check on the fixes next time we talk.",
+        "tags": [
+            "reminder",
+            "fixes",
+            "follow-up"
+        ],
+        "dateString": "Wed, 01 Jan 2025 05:45:30 PM CST",
+        "entryDate": 1735775130.3645039
+    },
+    {
+        "user_id": "a33eaa027c684ceabbf7345cfec87ee5",
+        "observation_type": "perception",
+        "note": "Nick perceives me as youthful.",
+        "dateString": "Wed, 01 Jan 2025 05:46:30 PM CST",
+        "entryDate": 1735775190.3554752
+    },
+    {
+        "user_id": "a33eaa027c684ceabbf7345cfec87ee5",
+        "observation_type": "communication_preference",
+        "note": "Nick prefers a more casual and less formal communication style.",
+        "dateString": "Wed, 01 Jan 2025 05:47:16 PM CST",
+        "entryDate": 1735775236.325349
+    }
+]

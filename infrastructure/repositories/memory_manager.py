@@ -31,7 +31,7 @@ class MemoryManager:
             self.logger.info(f"Attempting to load JSON file: {self.file_path}")
             with open(self.file_path, 'r') as file:
                 data = json.load(file)
-                self.logger.debug(f"Raw JSON content: {data}")
+                # self.logger.debug(f"Raw JSON content: {data}")
                 self.memories = data["memories"]
                 self.memory_ids = {mem["ID"] for mem in self.memories}
                 self.self_person = next(

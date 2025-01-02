@@ -35,6 +35,63 @@ tools = [
         }
     },
     {
+      "type": "function",
+      "function": {
+        "name": "add_user_observation",
+        "description": "Captures an observation about the user's preferences or personality",
+        "parameters": {
+          "type": "object",
+          "required": [
+            "user_id",
+            "observation_type",
+            "note"
+          ],
+          "properties": {
+            "user_id": {
+              "type": "string",
+              "description": "The name or ID of the user"
+            },
+            "observation_type": {
+              "type": "string",
+              "description": "Type of observation being recorded"
+            },
+            "note": {
+              "type": "string",
+              "description": "A detailed note about the observation"
+            }
+          },
+          "additionalProperties": False
+        },
+        "strict": True
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "add_self_observation",
+        "description": "Captures an observation about yourself: this can be prefrences, mood, feelings, or any novell thought",
+        "parameters": {
+          "type": "object",
+          "required": [
+            "observation_type",
+            "note"
+          ],
+          "properties": {
+            "observation_type": {
+              "type": "string",
+              "description": "Type of observation being recorded about yourself"
+            },
+            "note": {
+              "type": "string",
+              "description": "A detailed note about the observation made on the assistant's performance"
+            }
+          },
+          "additionalProperties": False
+        },
+        "strict": True
+      }
+    },
+    {
         "type": "function",
         "function": {
             "name": "read_remember_list",

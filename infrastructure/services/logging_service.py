@@ -60,5 +60,6 @@ def toggle_console_logs(enable: bool):
 memory_manager_logger = setup_logger("memory_manager")
 chat_manager_logger = setup_logger("chat_manager")
 coordinator_logger = setup_logger("coordinator")
+llm_api_logger = setup_logger("llm_api")
 
 
