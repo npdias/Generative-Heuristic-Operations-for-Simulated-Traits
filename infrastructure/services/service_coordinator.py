@@ -65,7 +65,7 @@ class Coordinator:
         recap = await self._summarize_memories()
         self.chat_manager.add_message(
             role='system',
-            content=f"Your name is {self.current_bot.name} {INITIAL_PROMPT} {recap} {self.current_bot.__dict__}"
+            content=f"{INITIAL_PROMPT} {recap} {self.current_bot.__dict__}"
         )
         self.chat_manager.add_message(
             role='system',
@@ -115,7 +115,7 @@ class Coordinator:
         self.chat_manager.load_transcript()
         transcript = str(self.chat_manager.get_transcript(trimmed=True))
         self.logger.debug(f"Chat Transcript: {transcript}")
-        prompt = f"{DEFAULT_CONVO_SUM_PROMPT} Identity:{self.current_bot}"
+        prompt = f"{DEFAULT_CONVO_SUM_PROMPT} Identity:{self.current_bot.__dict__}"
         if transcript != "[]":
             response = await self._summarize_memories(prompt=prompt, content=transcript)
             convo = Conversation(transcript=transcript, summary=response)

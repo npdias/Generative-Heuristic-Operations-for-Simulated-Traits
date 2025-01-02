@@ -5,12 +5,13 @@ from config import DATA_DIR
 from pathlib import Path
 from infrastructure.models import Memory, Person, Event, Conversation
 from infrastructure.services.logging_service import memory_manager_logger
-import time
+from datetime import datetime
 
 class MemoryManager:
     def __init__(self):
         self.logger = memory_manager_logger
         self.file_path = Path(os.path.join(DATA_DIR, 'memories.json'))
+        self.corrupted_dir =  os.path.join(DATA_DIR, "corrupted")
         self.memories: List[Dict[str, Any]] = []
         self.memory_ids = set()
         self.self_person = None
@@ -24,8 +25,7 @@ class MemoryManager:
         Handles errors related to malformed JSON or unexpected file content.
         """
         if not self.file_path.exists():
-            self.logger.warning("Memory file does not exist. Creating a blank file.")
-            self.file_path.write_text(json.dumps({"memories": []}, indent=4))
+            self._new_file()
 
         try:
             self.logger.info(f"Attempting to load JSON file: {self.file_path}")
@@ -41,14 +41,28 @@ class MemoryManager:
                 self.logger.info("Successfully loaded memories.")
         except json.JSONDecodeError as e:
             self.logger.error(f"JSON decoding error: {e}")
+            self._new_file(e)
 
         except ValueError as e:
             self.logger.error(f"Value error in JSON structure: {e}")
+            self._new_file(e)
 
         except Exception as e:
             self.logger.error(f"Unexpected error reading JSON: {e}", exc_info=True)
+            self._new_file(e)
 
-
+    def _new_file(self, error = None):
+        if error:
+            session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+            old_file = Path(os.path.join(DATA_DIR,'memories.json'))
+            if not os.path.exists(self.corrupted_dir):
+                os.makedirs(self.corrupted_dir)
+            os.rename(old_file, os.path.join(self.corrupted_dir, f'mem_{session_id}.json'))
+            self.logger.warning(f"Backup of Corrupted File: {os.path.dirname(old_file)}")
+        self.logger.warning("Memory file does not exist. Creating a blank file.")
+        self.file_path.write_text(json.dumps({"memories": []}, indent=4))
+        self.add_memory(Person(isSelf=True, name='Default', alive=True, relation='Self',currentObjectives=["Figure out who I am","Aid my User","Learn my Name"]))
+        self.load_memories()
 
     def _save_memories(self):
         """
@@ -87,7 +101,11 @@ class MemoryManager:
         Retrieve the cached self Person object.
         """
         self.logger.info("Retrieved self person from cache.")
-        return self.self_person
+        if self.self_person:
+            return self.self_person
+        else:
+            self.load_memories()
+
 
     def _add_misc_details(self, fact:dict):
         self.misc_details_collection.append(fact)
