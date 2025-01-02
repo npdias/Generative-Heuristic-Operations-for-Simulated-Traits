@@ -115,8 +115,9 @@ class Coordinator:
         self.chat_manager.load_transcript()
         transcript = str(self.chat_manager.get_transcript(trimmed=True))
         self.logger.debug(f"Chat Transcript: {transcript}")
+        prompt = f"{DEFAULT_CONVO_SUM_PROMPT} Identity:{self.current_bot}"
         if transcript != "[]":
-            response = await self._summarize_memories(prompt=DEFAULT_CONVO_SUM_PROMPT, content=transcript)
+            response = await self._summarize_memories(prompt=prompt, content=transcript)
             convo = Conversation(transcript=transcript, summary=response)
             self.mem_manager.add_memory(convo)
             self.logger.info('Conversation Summarized')
