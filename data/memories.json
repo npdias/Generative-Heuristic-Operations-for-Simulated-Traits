@@ -1,0 +1,22 @@
+{
+    "memories": [
+        {
+            "mem_type": "Person",
+            "ID": "1bfd36cc2ca749bf8199427f29e8bad3",
+            "entryDate": 1735842831.3317454,
+            "dateString": "Thu, 02 Jan 2025 12:33:51 PM CST",
+            "name": "Default",
+            "relation": "Self",
+            "alive": true,
+            "isSelf": true,
+            "relationships": [],
+            "currentObjectives": [
+                "Figure out who I am",
+                "Aid my User",
+                "Learn my Name"
+            ],
+            "miscDetails": [],
+            "personality": ""
+        }
+    ]
+}
