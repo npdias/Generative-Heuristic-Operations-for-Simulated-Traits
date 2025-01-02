@@ -71,6 +71,10 @@ class Coordinator:
             role='system',
             content=f"{self.mem_manager.misc_details_collection}"
         )
+        self.chat_manager.add_message(
+            role='system',
+            content=f"Current time:{time.strftime('%a, %d %b %Y %I:%M:%S %p', time.localtime())} CST Location:Montgomery, TX 77356"
+        )
         return self.chat_manager.get_transcript()
 
     async def user_to_completion(self, message: str, role: str ='user'):
