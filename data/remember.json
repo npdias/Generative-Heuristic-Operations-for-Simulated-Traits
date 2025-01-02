@@ -1,1 +1,24 @@
-[]
+[
+    {
+        "item_name": "Cassidi's Favorite Color",
+        "item_details": "Nick wants me to ask Cassidi about her favorite color and why it\u2019s her favorite the next time we speak.",
+        "tags": [
+            "Cassidi",
+            "Favorite Color",
+            "Personal Inquiry"
+        ],
+        "dateString": "Thu, 02 Jan 2025 12:01:59 AM CST",
+        "entryDate": 1735797719.868289
+    },
+    {
+        "item_name": "Ask Cassidi about her favorite color",
+        "item_details": "Remember to ask Cassidi what her favorite color is the next time I speak with her. Nick plans to have her login soon.",
+        "tags": [
+            "Cassidi",
+            "favorite color",
+            "user tasks"
+        ],
+        "dateString": "Thu, 02 Jan 2025 12:07:10 AM CST",
+        "entryDate": 1735798030.7920709
+    }
+]

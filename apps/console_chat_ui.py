@@ -34,6 +34,7 @@ async def console_interaction(bot_name:str = 'Bot'):
 
             await coordinator.update_last_activity()
     else:
+        coordinator.chat_manager.add_message(role='system',content="User: Session Ended")
         print(f"\n{'_'*80}\n")
         await coordinator.save_current()
         print(f"Session Ended: Goodbye\n{'_'*80}")
@@ -41,9 +42,9 @@ async def console_interaction(bot_name:str = 'Bot'):
 
 
 async def get_cur_user(bot_name):
-    await coordinator.set_user(add_msg=False, name= input(f"{bold_start}Input Name{bold_end}:\t"))
+    await coordinator.set_user(name= input(f"{bold_start}Input Name{bold_end}:\t"))
     print(f"{bold_start}{bot_name}{bold_end}:\t", end='')
-    async for resp in chat_loop(message=f"{coordinator.cur_user} is now the current user", role='system'):
+    async for resp in chat_loop(message=f"{coordinator.cur_user} has logged in", role='system'):
         print(resp, end='', flush=True)
 
 

@@ -30,7 +30,8 @@ class LLMService:
             LLMService.logger.debug("Messages: %s", messages)
             LLMService.logger.info(f"Sending request {'in streaming mode.' if stream else '.'}")
             args = {"model":LLMService.model,"messages":messages,"stream":stream}
-            args.update({'tools': tools} if use_tools else {})
+            if use_tools:
+                args['tools'] = tools
             response = LLMService.client.chat.completions.create(**args)
             if stream:
                 resp_content = Content(type='text', text='')
