@@ -23,9 +23,10 @@ class Coordinator:
         self.last_response = None
         self.logger.info('Coordinator Initialized')
 
-    async def set_user(self,name:str=None):
+    async def set_user(self,name:str=None, add_msg:bool=True):
         self.cur_user=name
-        self.chat_manager.add_message(role='system',content=f"Current User: {self.cur_user}")
+        if add_msg:
+            self.chat_manager.add_message(role='system',content=f"Current User: {self.cur_user}")
 
     async def update_last_activity(self):
         """Update the last activity timestamp in a thread-safe manner."""

@@ -29,7 +29,7 @@ class MemoryManager:
 
         try:
             self.logger.info(f"Attempting to load JSON file: {self.file_path}")
-            with open(self.file_path, 'r') as file:
+            with open(self.file_path, 'r', encoding='utf-8') as file:
                 data = json.load(file)
                 # self.logger.debug(f"Raw JSON content: {data}")
                 self.memories = data["memories"]

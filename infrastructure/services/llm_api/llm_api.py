@@ -1,6 +1,5 @@
 import os
 from infrastructure.services.llm_api.llm_tools_config import tools
-import logging
 from openai import OpenAI
 from typing import List, Dict
 from dotenv import load_dotenv
